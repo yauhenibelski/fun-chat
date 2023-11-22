@@ -1,0 +1,7 @@
+/node_modules
+/build
+/.github
+/mock_server
+
+webpack.config.js
+commitlint.config.js

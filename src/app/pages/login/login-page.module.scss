@@ -1,0 +1,56 @@
+$background-color: rgba(0, 0, 0, 0.1);
+
+.host {
+    display: block;
+    margin-top: 10dvh;
+}
+.content-wrap {
+    display: flex;
+    flex-direction: column;
+    background-color: $background-color;
+    border-radius: 5px;
+    padding: 30px;
+    max-width: 300px;
+    margin: auto;
+
+    button {
+        background-color: rgba(0, 0, 0, 0.1);
+        border: none;
+        padding: 5px 0px;
+        margin-top: 20px;
+        cursor: pointer;
+        width: 100px;
+
+        @media (hover: hover) {
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.2);
+            }
+        }
+    }
+}
+
+.first-name,
+.second-name {
+    input {
+        display: block;
+        position: relative;
+        background: #a3a3a36e;
+        border: none;
+        outline: none;
+        height: 30px;
+        margin-bottom: 10px;
+        padding-left: 20px;
+        width: -webkit-fill-available;
+    }
+}
+
+.invalid {
+    color: rgb(193 46 46);
+}
+
+.first-name::before {
+    content: 'First name';
+}
+.second-name::before {
+    content: 'Surname';
+}

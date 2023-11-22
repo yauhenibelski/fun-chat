@@ -1,0 +1,25 @@
+{
+    "include": ["src"],
+    "compilerOptions": {
+        "target": "ES2021" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+        "module": "NodeNext" /* Specify what module code is generated. */,
+        "paths": {
+            "@pages/*": ["./src/app/pages/*"],
+            "@utils/*": ["./src/utils/*"],
+            "@style/*": ["./src/style/*"],
+            "@interfaces/*": ["./src/app/interfaces/*"],
+            "@assets/*": ["./src/assets/*"],
+            "@shared/*": ["./src/app/shared/*"],
+            "@type-guards/*": ["./src/type-guards/*"]
+        },
+
+        "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
+        "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
+        "strict": true /* Enable all strict type-checking options. */,
+        "noImplicitAny": true /* Enable error reporting for expressions and declarations with an implied 'any' type. */,
+        "strictNullChecks": true /* When type checking, take into account 'null' and 'undefined'. */,
+        "strictFunctionTypes": true /* When assigning functions, check to ensure parameters and the return values are subtype-compatible. */,
+        "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+        "experimentalDecorators": true
+    }
+}
