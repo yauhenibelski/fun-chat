@@ -2,9 +2,8 @@ import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
 import { ApiService } from '@shared/api-service';
-import { UserAuthReq } from '@interfaces/user-authentication-request';
 import SessionStorage from '@shared/session-storage/session-storage';
-import { userLoginResponse$, userLogoutResponse$ } from '@shared/observables';
+import { userLoginResponse$ } from '@shared/observables';
 import { UserAuthRes } from '@interfaces/user-authentication-response';
 import style from './login-page.module.scss';
 import { redirectTo } from '../../../router/utils/redirect';
@@ -20,7 +19,6 @@ class LoginPage extends Component {
         this.createComponent();
 
         userLoginResponse$.subscribe(this.userLoginResponseSubscribe);
-        userLogoutResponse$.subscribe(this.userLogoutResponseSubscribe);
     }
 
     private userLoginResponseSubscribe = (data: UserAuthRes | null) => {
@@ -31,17 +29,7 @@ class LoginPage extends Component {
         this.render();
     };
 
-    private userLogoutResponseSubscribe = (data: UserAuthRes | null) => {
-        if (!data) return;
-
-        SessionStorage.saveSession(data.user);
-        redirectTo(Routes.login);
-        this.render();
-    };
-
     protected createComponent(): void {
-        const { loginBTN } = this.elements;
-
         this.appendElements();
 
         const firstNameField = <HTMLInputElement>this.elements.firstNameField.firstChild;
@@ -54,27 +42,7 @@ class LoginPage extends Component {
         passwordField.placeholder = '- - - - - - - -';
         passwordField.type = 'password';
 
-        if (SessionStorage.isLogined()) {
-            loginBTN.innerText = 'Logout';
-        }
-
         this.addEvents();
-    }
-
-    protected childrenElements() {
-        return {
-            form: createElement({ tag: 'form' }),
-            firstNameField: createElement({ tag: 'input', style: style['first-name'] }, true),
-            passwordField: createElement({ tag: 'input', style: style.password }, true),
-            loginBTN: createElement({ tag: 'button', text: 'Login' }),
-        };
-    }
-
-    protected appendElements(): void {
-        const { form, firstNameField, passwordField, loginBTN } = this.elements;
-
-        form.append(firstNameField, passwordField, loginBTN);
-        this.contentWrap.append(form);
     }
 
     protected matchInputValue(input: HTMLInputElement, minLength: number): boolean {
@@ -102,14 +70,7 @@ class LoginPage extends Component {
         passwordField.oninput = () => passwordField.setCustomValidity('');
 
         loginBTN.onclick = () => {
-            if (SessionStorage.isLogined()) {
-                ApiService.send<UserAuthReq>('USER_LOGOUT', {
-                    user: {
-                        login: SessionStorage.app.login,
-                        password: SessionStorage.storage.getItem('password')!, // !!!!!!!!!
-                    },
-                });
-            }
+            if (SessionStorage.isLogined()) ApiService.logout();
 
             const validFirstNameField = this.matchInputValue(firstNameField, 3);
             const validPasswordField = this.matchInputValue(passwordField, 3);
@@ -119,16 +80,26 @@ class LoginPage extends Component {
             passwordField.className = validPasswordField ? '' : style.invalid;
 
             if (canSubmit) {
-                ApiService.send<UserAuthReq>('USER_LOGIN', {
-                    user: {
-                        login: firstNameField.value,
-                        password: passwordField.value,
-                    },
-                });
-                SessionStorage.storage.setItem('password', passwordField.value); // !!!!!!!!!!!!!!!!!!!!!!
+                ApiService.login(firstNameField.value, passwordField.value);
             }
         };
         form.onsubmit = (event: Event) => event.preventDefault();
+    }
+
+    protected childrenElements() {
+        return {
+            form: createElement({ tag: 'form' }),
+            firstNameField: createElement({ tag: 'input', style: style['first-name'] }, true),
+            passwordField: createElement({ tag: 'input', style: style.password }, true),
+            loginBTN: createElement({ tag: 'button', text: 'Login' }),
+        };
+    }
+
+    protected appendElements(): void {
+        const { form, firstNameField, passwordField, loginBTN } = this.elements;
+
+        form.append(firstNameField, passwordField, loginBTN);
+        this.contentWrap.append(form);
     }
 }
 

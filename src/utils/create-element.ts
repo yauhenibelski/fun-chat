@@ -8,7 +8,7 @@ interface CreateElementProps<T> {
 
 const setStyle = (elem: HTMLElement, style: string | string[]): void => {
     if (style instanceof Array) {
-        elem.classList.add(...style);
+        elem.classList.add(...style.filter(style => style));
     }
     if (typeof style === 'string') {
         elem.classList.add(style);

@@ -1,0 +1,18 @@
+.host {
+    display: block;
+}
+.content-wrap {
+    display: block;
+}
+
+.search {
+    display: flex;
+    background-color: antiquewhite;
+    height: 30px;
+    position: relative;
+
+    input {
+        padding: 5px;
+        width: 100%;
+    }
+}
