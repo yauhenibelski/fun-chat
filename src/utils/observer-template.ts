@@ -11,7 +11,6 @@ export class Observable<T> {
     }
 
     public subscribe(subscriber: Subscriber<T>): void {
-        subscriber(this.value);
         this.observers.push(subscriber);
     }
 

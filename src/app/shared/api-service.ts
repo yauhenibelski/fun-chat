@@ -1,8 +1,18 @@
+import { ChatDto } from '@interfaces/dto';
+import { RequestType } from '../types/request.type';
+import { userLoginResponse$, userLogoutResponse$ } from './observables';
+
 export class ApiService {
     static readonly socket = new WebSocket('ws://localhost:4000/');
 
-    static readonly send = <T>(e: T) => {
-        return e;
+    static readonly send = <Payload>(type: RequestType, payload: Payload): void => {
+        const body: ChatDto<Payload> = {
+            id: '',
+            type,
+            payload,
+        };
+
+        this.socket.send(JSON.stringify(body));
     };
 
     static readonly open = () => {
@@ -12,8 +22,35 @@ export class ApiService {
     };
 
     static readonly message = () => {
-        this.socket.onmessage = event => {
-            console.log(event, event.type);
+        this.socket.onmessage = ({ data }) => {
+            const dataDto = JSON.parse(data);
+
+            switch (dataDto.type) {
+                case 'USER_LOGIN': {
+                    userLoginResponse$.publish(dataDto.payload);
+                    break;
+                }
+                case 'USER_LOGOUT': {
+                    userLogoutResponse$.publish(dataDto.payload);
+                    break;
+                }
+                // case 'USER_EXTERNAL_LOGIN': console.log(1);
+                // case 'USER_EXTERNAL_LOGOUT': console.log(1);
+                // case 'USER_ACTIVE': console.log(1);
+                // case 'USER_INACTIVE': console.log(1);
+                // case 'MSG_SEND': console.log(1);
+                // case 'MSG_READ': console.log(1);
+                // case 'MSG_DELIVER': console.log(1);
+                // case 'MSG_FROM_USER': console.log(1);
+                // case 'MSG_EDIT': console.log(1);
+                // case 'MSG_DELETE': console.log(1);
+                case 'ERROR': {
+                    console.log(dataDto, 'error');
+                    break;
+                }
+                default:
+                    break;
+            }
         };
     };
 

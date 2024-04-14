@@ -1,4 +1,4 @@
-interface UserAuthPropRes {
+export interface UserAuthPropRes {
     login: string;
     isLogined: boolean;
 }

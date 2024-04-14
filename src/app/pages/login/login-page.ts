@@ -1,9 +1,14 @@
 import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
+import { ApiService } from '@shared/api-service';
+import { UserAuthReq } from '@interfaces/user-authentication-request';
+import SessionStorage from '@shared/session-storage/session-storage';
+import { userLoginResponse$, userLogoutResponse$ } from '@shared/observables';
+import { UserAuthRes } from '@interfaces/user-authentication-response';
 import style from './login-page.module.scss';
-// import { Routes } from '../../../router/routes.enum';
-// import { redirectTo } from '../../../router/utils/redirect';
+import { redirectTo } from '../../../router/utils/redirect';
+import { Routes } from '../../../router/routes.const';
 
 @CustomSelector('Login-page')
 class LoginPage extends Component {
@@ -11,14 +16,31 @@ class LoginPage extends Component {
 
     constructor() {
         super(style);
+
+        this.createComponent();
+
+        userLoginResponse$.subscribe(this.userLoginResponseSubscribe);
+        userLogoutResponse$.subscribe(this.userLogoutResponseSubscribe);
     }
 
-    protected connectedCallback(): void {
+    private userLoginResponseSubscribe = (data: UserAuthRes | null) => {
+        if (!data) return;
+
+        SessionStorage.saveSession(data.user);
+        redirectTo(Routes.chat);
         this.render();
-    }
+    };
+
+    private userLogoutResponseSubscribe = (data: UserAuthRes | null) => {
+        if (!data) return;
+
+        SessionStorage.saveSession(data.user);
+        redirectTo(Routes.login);
+        this.render();
+    };
 
     protected createComponent(): void {
-        // const { loginBTN } = this.elements;
+        const { loginBTN } = this.elements;
 
         this.appendElements();
 
@@ -32,9 +54,9 @@ class LoginPage extends Component {
         passwordField.placeholder = '- - - - - - - -';
         passwordField.type = 'password';
 
-        // if (localStorage.userLogged()) {
-        //     loginBTN.innerText = 'Logout';
-        // }
+        if (SessionStorage.isLogined()) {
+            loginBTN.innerText = 'Logout';
+        }
 
         this.addEvents();
     }
@@ -80,15 +102,30 @@ class LoginPage extends Component {
         passwordField.oninput = () => passwordField.setCustomValidity('');
 
         loginBTN.onclick = () => {
+            if (SessionStorage.isLogined()) {
+                ApiService.send<UserAuthReq>('USER_LOGOUT', {
+                    user: {
+                        login: SessionStorage.app.login,
+                        password: SessionStorage.storage.getItem('password')!, // !!!!!!!!!
+                    },
+                });
+            }
+
             const validFirstNameField = this.matchInputValue(firstNameField, 3);
-            const validPasswordField = this.matchInputValue(passwordField, 8);
+            const validPasswordField = this.matchInputValue(passwordField, 3);
             const canSubmit = validFirstNameField && validPasswordField;
 
             firstNameField.className = validFirstNameField ? '' : style.invalid;
             passwordField.className = validPasswordField ? '' : style.invalid;
 
             if (canSubmit) {
-                console.log();
+                ApiService.send<UserAuthReq>('USER_LOGIN', {
+                    user: {
+                        login: firstNameField.value,
+                        password: passwordField.value,
+                    },
+                });
+                SessionStorage.storage.setItem('password', passwordField.value); // !!!!!!!!!!!!!!!!!!!!!!
             }
         };
         form.onsubmit = (event: Event) => event.preventDefault();

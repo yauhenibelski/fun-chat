@@ -4,7 +4,7 @@ export interface MessageStatus {
     isEdited: boolean;
 }
 
-interface SendMessageReqProp {
+interface SendMessageResProp {
     id: string;
     from: string;
     to: string;
@@ -13,6 +13,6 @@ interface SendMessageReqProp {
     status: MessageStatus;
 }
 
-export interface SendMessageReq {
-    message: SendMessageReqProp;
+export interface SendMessageRes {
+    message: SendMessageResProp;
 }

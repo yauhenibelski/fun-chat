@@ -1,4 +1,4 @@
-interface UserAuthPropReq {
+export interface UserAuthPropReq {
     login: string;
     password: string;
 }
