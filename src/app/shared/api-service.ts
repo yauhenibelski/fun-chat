@@ -17,7 +17,7 @@ export class ApiService {
 
     static readonly open = () => {
         this.socket.onopen = event => {
-            console.log(event, event.type);
+            console.log(event.type);
         };
     };
 

@@ -7,7 +7,7 @@ class App {
     root = document.body;
 
     run() {
-        const routOutput = createElement({ tag: 'main', style: 'router' });
+        const routOutput = createElement({ tag: 'div', style: 'router' });
         this.root.append(routOutput);
 
         SessionStorage.checkStorage();

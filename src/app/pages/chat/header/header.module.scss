@@ -1,0 +1,17 @@
+.host {
+    display: block;
+}
+.content-wrap {
+    display: flex;
+    border-radius: 5px;
+    justify-content: space-between;
+    align-items: center;
+}
+.btns-wrap {
+    button {
+        font-size: large;
+        margin: 5px;
+        background-color: transparent;
+        border-radius: 5px;
+    }
+}

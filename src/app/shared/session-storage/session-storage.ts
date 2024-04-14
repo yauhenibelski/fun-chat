@@ -26,6 +26,11 @@ const SessionStorage = {
         return this.app.isLogined;
     },
 
+    getUserName(): string {
+        this.checkStorage();
+        return this.app.login;
+    },
+
     saveStorage(): void {
         this.storage.setItem(this.keyName, JSON.stringify(this.app));
     },
