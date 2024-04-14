@@ -30,7 +30,7 @@ $background-color: rgba(0, 0, 0, 0.1);
 }
 
 .first-name,
-.second-name {
+.password {
     input {
         display: block;
         position: relative;
@@ -51,6 +51,6 @@ $background-color: rgba(0, 0, 0, 0.1);
 .first-name::before {
     content: 'First name';
 }
-.second-name::before {
-    content: 'Surname';
+.password::before {
+    content: 'Password';
 }

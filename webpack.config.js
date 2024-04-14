@@ -58,7 +58,7 @@ module.exports = ({ develop }) => ({
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'Async race',
+            title: 'Fun chat',
         }),
         new MiniCssExtractPlugin({
             filename: 'style.css',

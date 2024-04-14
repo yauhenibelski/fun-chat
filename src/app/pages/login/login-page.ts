@@ -2,7 +2,6 @@ import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
 import style from './login-page.module.scss';
-// import localStorage from '../../shared/local-storage/local-storage';
 // import { Routes } from '../../../router/routes.enum';
 // import { redirectTo } from '../../../router/utils/redirect';
 
@@ -24,13 +23,14 @@ class LoginPage extends Component {
         this.appendElements();
 
         const firstNameField = <HTMLInputElement>this.elements.firstNameField.firstChild;
-        const secondNameField = <HTMLInputElement>this.elements.secondNameField.firstChild;
+        const passwordField = <HTMLInputElement>this.elements.passwordField.firstChild;
 
         firstNameField.required = true;
         firstNameField.placeholder = 'example: John';
 
-        secondNameField.required = true;
-        secondNameField.placeholder = 'example: Smith';
+        passwordField.required = true;
+        passwordField.placeholder = '- - - - - - - -';
+        passwordField.type = 'password';
 
         // if (localStorage.userLogged()) {
         //     loginBTN.innerText = 'Logout';
@@ -43,71 +43,52 @@ class LoginPage extends Component {
         return {
             form: createElement({ tag: 'form' }),
             firstNameField: createElement({ tag: 'input', style: style['first-name'] }, true),
-            secondNameField: createElement({ tag: 'input', style: style['second-name'] }, true),
+            passwordField: createElement({ tag: 'input', style: style.password }, true),
             loginBTN: createElement({ tag: 'button', text: 'Login' }),
         };
     }
 
     protected appendElements(): void {
-        const { form, firstNameField, secondNameField, loginBTN } = this.elements;
+        const { form, firstNameField, passwordField, loginBTN } = this.elements;
 
-        form.append(firstNameField, secondNameField, loginBTN);
+        form.append(firstNameField, passwordField, loginBTN);
         this.contentWrap.append(form);
     }
 
     protected matchInputValue(input: HTMLInputElement, minLength: number): boolean {
         const { value, validity } = input;
         if (value) {
-            if (!value[0].match('[A-Z]')) {
-                input.setCustomValidity('First letter should be in uppercase.');
-                return false;
-            }
-
-            // eslint-disable-next-line prettier/prettier, no-useless-escape
-            if (!value.match('^[a-zA-Z-]+$')) {
-                input.setCustomValidity('Only the symbol "-" is allowed');
-                return false;
-            }
-
             // eslint-disable-next-line no-useless-escape
             if (!value.match(`^[a-zA-Z\-]{${minLength}}`)) {
                 input.setCustomValidity(`Minimum length ${minLength} characters`);
                 return false;
             }
         }
+
         input.setCustomValidity('');
+
         return validity.valid;
     }
 
     protected addEvents(): void {
         const firstNameField = <HTMLInputElement>this.elements.firstNameField.firstChild;
-        const secondNameField = <HTMLInputElement>this.elements.secondNameField.firstChild;
+        const passwordField = <HTMLInputElement>this.elements.passwordField.firstChild;
         const { form } = this.elements;
         const { loginBTN } = this.elements;
 
         firstNameField.oninput = () => firstNameField.setCustomValidity('');
-        secondNameField.oninput = () => secondNameField.setCustomValidity('');
+        passwordField.oninput = () => passwordField.setCustomValidity('');
 
         loginBTN.onclick = () => {
-            // if (localStorage.userLogged()) {
-            //     localStorage.storage.clear();
-            //     // eslint-disable-next-line no-restricted-globals
-            //     location.reload();
-            // }
-
             const validFirstNameField = this.matchInputValue(firstNameField, 3);
-            const validSecondNameField = this.matchInputValue(secondNameField, 4);
-            const canSubmit = validFirstNameField && validSecondNameField;
+            const validPasswordField = this.matchInputValue(passwordField, 8);
+            const canSubmit = validFirstNameField && validPasswordField;
 
             firstNameField.className = validFirstNameField ? '' : style.invalid;
-            secondNameField.className = validSecondNameField ? '' : style.invalid;
+            passwordField.className = validPasswordField ? '' : style.invalid;
 
             if (canSubmit) {
-                // localStorage.saveUserName({
-                //     firstName: firstNameField.value,
-                //     surname: secondNameField.value,
-                // });
-                // redirectTo(Routes.startScreen);
+                console.log();
             }
         };
         form.onsubmit = (event: Event) => event.preventDefault();
