@@ -1,0 +1,49 @@
+.host {
+    display: flex;
+    position: relative;
+    flex-basis: 69%;
+}
+.content-wrap {
+    display: flex;
+    flex-direction: column;
+    border: solid;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
+}
+.external-user-wrap {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 30px;
+    border-bottom: solid;
+}
+.status {
+}
+
+.input-text-wrap {
+    display: flex;
+    flex-grow: 1;
+
+    input {
+        width: 100%;
+    }
+}
+
+.text-form {
+    display: flex;
+
+    button {
+        padding: 5px 30px;
+    }
+}
+
+.dialog-window {
+    flex-grow: 1;
+}
+
+.empty-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

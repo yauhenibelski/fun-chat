@@ -1,8 +1,13 @@
 .host {
-    display: block;
+    display: flex;
+    flex-basis: 30%;
 }
 .content-wrap {
     display: block;
+    border: solid;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
 }
 
 .search {

@@ -3,15 +3,17 @@
 }
 .content-wrap {
     display: flex;
-    border-radius: 5px;
     justify-content: space-between;
     align-items: center;
+    border: solid;
+    border-radius: 5px;
+
+    h4 {
+        margin: 5px;
+    }
 }
 .btns-wrap {
     button {
-        font-size: large;
         margin: 5px;
-        background-color: transparent;
-        border-radius: 5px;
     }
 }

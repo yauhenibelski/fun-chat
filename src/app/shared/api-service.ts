@@ -46,9 +46,9 @@ export class ApiService {
             if (dataDto.type === 'USER_EXTERNAL_LOGOUT') userExternalLogoutResponse$.publish(dataDto.payload);
 
             // case 'MSG_SEND': console.log(1);
+            // case 'MSG_FROM_USER': console.log(1);
             // case 'MSG_READ': console.log(1);
             // case 'MSG_DELIVER': console.log(1);
-            // case 'MSG_FROM_USER': console.log(1);
             // case 'MSG_EDIT': console.log(1);
             // case 'MSG_DELETE': console.log(1);
 

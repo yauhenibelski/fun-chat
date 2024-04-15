@@ -2,7 +2,7 @@ import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import { UserAuthPropRes, UserAuthRes } from '@interfaces/user-authentication-response';
 import createElement from '@utils/create-element';
-import { userExternalLoginResponse$, userExternalLogoutResponse$ } from '@shared/observables';
+import { currentExternalUser$, userExternalLoginResponse$, userExternalLogoutResponse$ } from '@shared/observables';
 import style from './user.module.scss';
 
 @CustomSelector('User')
@@ -27,6 +27,8 @@ class User extends Component {
     };
 
     protected createComponent(): void {
+        this.onclick = () => currentExternalUser$.publish(this);
+
         this.appendElements();
     }
 
