@@ -29,8 +29,8 @@ class Header extends Component {
 
     protected childrenElements() {
         return {
-            userName: createElement({ tag: 'h4', text: `${SessionStorage.getUserName()}` }),
-            chatName: createElement({ tag: 'h2', text: `Fun Chat` }),
+            userName: createElement({ tag: 'p', text: `${SessionStorage.getUserName()}` }),
+            chatName: createElement({ tag: 'h3', text: `Fun Chat` }),
             btnsWrap: createElement({ tag: 'div', style: style['btns-wrap'] }),
             infoBtn: createElement({ tag: 'button', text: 'Info' }),
             logoutBtn: createElement({ tag: 'button', text: 'Logout' }),

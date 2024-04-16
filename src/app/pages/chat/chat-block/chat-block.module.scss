@@ -2,6 +2,7 @@
     display: flex;
     position: relative;
     flex-basis: 69%;
+    height: 100%;
 }
 .content-wrap {
     display: flex;
@@ -41,7 +42,10 @@
 }
 
 .dialog-window {
+    display: flex;
+    flex-direction: column-reverse;
     flex-grow: 1;
+    overflow: scroll;
 }
 
 .empty-dialog {

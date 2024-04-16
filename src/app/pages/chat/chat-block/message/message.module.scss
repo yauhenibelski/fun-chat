@@ -1,0 +1,37 @@
+.host {
+    display: flex;
+    flex-direction: column;
+}
+.content-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    width: max-content;
+    max-width: 60%;
+    // height: 20px;
+    background-color: #c3c3c3;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    word-break: break-word;
+    font-size: 8px;
+
+    p {
+        margin: 3px;
+    }
+}
+.right {
+    align-self: flex-end;
+    background-color: #f0f0f0;
+}
+
+.about-wrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+.message-text {
+    font-size: small;
+}
+.status {
+    align-self: flex-end;
+}

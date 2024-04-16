@@ -1,6 +1,8 @@
 .host {
     display: flex;
     flex-basis: 30%;
+    height: 100%;
+    overflow: scroll;
 }
 .content-wrap {
     display: block;
