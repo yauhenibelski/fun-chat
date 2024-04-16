@@ -1,9 +1,9 @@
 import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
-import { currentExternalUser$, externalUserMsgHistory$ } from '@shared/observables';
+import { currentExternalUser$, externalUserMsgHistory$, msgSendResponse$ } from '@shared/observables';
 import { ApiService } from '@shared/api-service';
-import { SendMessageResProp } from '@interfaces/send-message-response';
+import { SendMessageRes, SendMessageResProp } from '@interfaces/send-message-response';
 import { SendMessageReq } from '@interfaces/send-message-request';
 import style from './chat-block.module.scss';
 import type User from '../users/users-list/user/user';
@@ -21,8 +21,19 @@ class ChatBlock extends Component {
         this.createComponent();
         currentExternalUser$.subscribe(this.currentExternalUserSubscribe);
         externalUserMsgHistory$.subscribe(this.externalUserMsgHistorySubscribe);
-        // msgSendResponse$.subscribe()
+        msgSendResponse$.subscribe(this.msgSendResponseSubscribe);
     }
+
+    private msgSendResponseSubscribe = (mgs: SendMessageRes | null): void => {
+        if (!mgs) return;
+
+        console.log(mgs);
+
+        this.saveMessage(mgs.message);
+
+        const lastMgs = this.messages[this.messages.length - 1];
+        lastMgs.scrollIntoView(false);
+    };
 
     private externalUserMsgHistorySubscribe = (mgs: SendMessageResProp[]): void => {
         const { dialogWindow } = this.elements;
@@ -38,13 +49,7 @@ class ChatBlock extends Component {
         dialogWindow.classList.remove(style['empty-dialog']);
         dialogWindow.innerHTML = '';
 
-        mgs.forEach(message => {
-            const newMessage = new Message(message);
-
-            dialogWindow.prepend(newMessage.getElement());
-
-            this.messages.push(newMessage);
-        });
+        mgs.forEach(message => this.saveMessage(message));
     };
 
     private currentExternalUserSubscribe = (currentUser: User | null): void => {
@@ -85,9 +90,19 @@ class ChatBlock extends Component {
                     to: currentExternalUser$.value!.user.login,
                 },
             });
+            textField.value = '';
         };
 
         this.appendElements();
+    }
+
+    protected saveMessage(message: SendMessageResProp): void {
+        const { dialogWindow } = this.elements;
+        const newMessage = new Message(message);
+
+        dialogWindow.append(newMessage.getElement());
+
+        this.messages.push(newMessage);
     }
 
     protected childrenElements() {

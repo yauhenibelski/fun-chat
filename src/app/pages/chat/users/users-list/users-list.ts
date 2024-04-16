@@ -15,7 +15,7 @@ import User from './user/user';
 
 @CustomSelector('Users-list')
 class UsersList extends Component {
-    private users: User[] = [];
+    private users: { [key: string]: User } = {};
 
     constructor() {
         super(style);
@@ -32,10 +32,10 @@ class UsersList extends Component {
     private userExternalLoginResponseSubscribe = (data: UserAuthRes | null) => {
         if (!data) return;
 
-        const isNewUser = !this.users.find(({ user }) => user.login === data.user.login);
+        const isNewUser = !(data.user.login in this.users);
 
         if (isNewUser) {
-            this.users = [...this.users, new User(data.user)];
+            this.users = { ...this.users, ...{ [data.user.login]: new User(data.user) } };
             this.render();
         }
     };
@@ -46,7 +46,14 @@ class UsersList extends Component {
     };
 
     private updateUserListSubscribe = (data: UserAuthPropRes[]) => {
-        this.users = [...this.users, ...data.map(user => new User(user))];
+        this.users = {
+            ...this.users,
+            ...Object.fromEntries(
+                data.map(user => {
+                    return [user.login, new User(user)];
+                }),
+            ),
+        };
         this.render();
     };
 
@@ -55,18 +62,14 @@ class UsersList extends Component {
     }
 
     protected appendElements(): void {
-        if (!this.users.length) return;
+        Object.entries(this.users).forEach(([login, userObj]) => {
+            const isAppLogin = login === SessionStorage.getUserName();
+            const isLoginMatchesSortValue = login.toLowerCase().includes(userSortValue$.value);
 
-        this.users.sort((a, b) => a.user.login.localeCompare(b.user.login));
-
-        this.users
-            .filter(
-                ({ user }) =>
-                    user.login.toLowerCase().includes(userSortValue$.value) && user.login !== SessionStorage.app.login,
-            )
-            .forEach(user => {
-                this.contentWrap.append(user.getElement());
-            });
+            if (isLoginMatchesSortValue && !isAppLogin) {
+                this.contentWrap.append(userObj.getElement());
+            }
+        });
     }
 }
 
