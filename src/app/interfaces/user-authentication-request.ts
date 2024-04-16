@@ -2,6 +2,6 @@ export interface UserAuthPropReq {
     login: string;
     password: string;
 }
-export interface UserAuthReq {
-    user: UserAuthPropReq;
+export interface UserAuthReq<T = UserAuthPropReq> {
+    user: T;
 }

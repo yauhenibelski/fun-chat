@@ -1,8 +1,12 @@
 import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
-import { currentExternalUser$ } from '@shared/observables';
+import { currentExternalUser$, externalUserMsgHistory$ } from '@shared/observables';
+import { ApiService } from '@shared/api-service';
+import { SendMessageResProp } from '@interfaces/send-message-response';
 import style from './chat-block.module.scss';
+import type User from '../users/users-list/user/user';
+import { UserLogin } from '../../../types/user-login';
 
 @CustomSelector('Chat-block')
 class ChatBlock extends Component {
@@ -12,18 +16,42 @@ class ChatBlock extends Component {
         super(style);
 
         this.createComponent();
-        currentExternalUser$.subscribe(currentUser => {
-            if (!currentUser) return;
-            const { externalUserName, externalUserStatus } = this.elements;
-
-            externalUserName.innerText = currentUser.user.login;
-            externalUserStatus.innerText = currentUser.user.isLogined ? 'online' : 'offline';
-            // dialogWindow.classList.remove(style['empty-dialog']);
-            // dialogWindow.innerHTML = '';
-        });
+        currentExternalUser$.subscribe(this.currentExternalUserSubscribe);
+        externalUserMsgHistory$.subscribe(this.externalUserMsgHistorySubscribe);
     }
 
+    private externalUserMsgHistorySubscribe = (mgs: SendMessageResProp[]): void => {
+        const { dialogWindow } = this.elements;
+
+        if (!mgs.length) {
+            dialogWindow.innerHTML = 'Write your first message...';
+            return;
+        }
+
+        dialogWindow.classList.remove(style['empty-dialog']);
+        dialogWindow.innerHTML = '';
+    };
+
+    private currentExternalUserSubscribe = (currentUser: User | null): void => {
+        if (!currentUser) return;
+        const { externalUserName, externalUserStatus } = this.elements;
+
+        externalUserName.innerText = currentUser.user.login;
+        externalUserStatus.innerText = currentUser.user.isLogined ? 'online' : 'offline';
+
+        ApiService.send<UserLogin>('MSG_FROM_USER', {
+            user: {
+                login: currentUser.user.login,
+            },
+        });
+    };
+
     protected createComponent(): void {
+        const { inputTextWrap } = this.elements;
+
+        const textField = <HTMLInputElement>inputTextWrap.firstChild;
+        textField.placeholder = 'message...';
+
         this.appendElements();
     }
 

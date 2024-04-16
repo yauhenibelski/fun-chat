@@ -3,6 +3,7 @@ import { UserAuthReq } from '@interfaces/user-authentication-request';
 import { RequestType } from '../types/request.type';
 import {
     activeUsersResponse$,
+    externalUserMsgHistory$,
     inActiveUsersResponse$,
     userExternalLoginResponse$,
     userExternalLogoutResponse$,
@@ -44,9 +45,9 @@ export class ApiService {
             if (dataDto.type === 'USER_INACTIVE') inActiveUsersResponse$.publish(dataDto.payload.users);
             if (dataDto.type === 'USER_EXTERNAL_LOGIN') userExternalLoginResponse$.publish(dataDto.payload);
             if (dataDto.type === 'USER_EXTERNAL_LOGOUT') userExternalLogoutResponse$.publish(dataDto.payload);
+            if (dataDto.type === 'MSG_FROM_USER') externalUserMsgHistory$.publish(dataDto.payload.messages);
 
             // case 'MSG_SEND': console.log(1);
-            // case 'MSG_FROM_USER': console.log(1);
             // case 'MSG_READ': console.log(1);
             // case 'MSG_DELIVER': console.log(1);
             // case 'MSG_EDIT': console.log(1);

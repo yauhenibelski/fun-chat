@@ -20,8 +20,9 @@ class Users extends Component {
         const searchField = <HTMLInputElement>search.firstChild;
 
         userSortValue$.publish('');
+
         searchField.placeholder = 'Search...';
-        searchField.oninput = () => userSortValue$.publish(searchField.value);
+        searchField.oninput = () => userSortValue$.publish(searchField.value.toLowerCase());
 
         this.appendElements();
     }

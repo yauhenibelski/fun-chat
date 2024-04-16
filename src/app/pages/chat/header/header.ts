@@ -19,7 +19,7 @@ class Header extends Component {
             if (!data) return;
             const { userName } = this.elements;
 
-            userName.innerText = `User: ${data.user.login}`;
+            userName.innerText = `${data.user.login}`;
         });
     }
 
@@ -29,7 +29,7 @@ class Header extends Component {
 
     protected childrenElements() {
         return {
-            userName: createElement({ tag: 'h4', text: `User: ${SessionStorage.getUserName()}` }),
+            userName: createElement({ tag: 'h4', text: `${SessionStorage.getUserName()}` }),
             chatName: createElement({ tag: 'h2', text: `Fun Chat` }),
             btnsWrap: createElement({ tag: 'div', style: style['btns-wrap'] }),
             infoBtn: createElement({ tag: 'button', text: 'Info' }),

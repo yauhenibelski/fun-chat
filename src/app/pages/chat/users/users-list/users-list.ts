@@ -9,6 +9,7 @@ import {
     userLoginResponse$,
     userSortValue$,
 } from '@shared/observables';
+import SessionStorage from '@shared/session-storage/session-storage';
 import style from './users-list.module.scss';
 import User from './user/user';
 
@@ -59,7 +60,10 @@ class UsersList extends Component {
         this.users.sort((a, b) => a.user.login.localeCompare(b.user.login));
 
         this.users
-            .filter(({ user }) => user.login.includes(userSortValue$.value))
+            .filter(
+                ({ user }) =>
+                    user.login.toLowerCase().includes(userSortValue$.value) && user.login !== SessionStorage.app.login,
+            )
             .forEach(user => {
                 this.contentWrap.append(user.getElement());
             });

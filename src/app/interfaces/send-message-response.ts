@@ -4,7 +4,7 @@ export interface MessageStatus {
     isEdited: boolean;
 }
 
-interface SendMessageResProp {
+export interface SendMessageResProp {
     id: string;
     from: string;
     to: string;
