@@ -37,36 +37,37 @@ class ChatBlock extends Component {
             fromUserLogin === SessionStorage.getUserName() || currentExternalUserLogin === fromUserLogin;
 
         if (isSelectedUserDialogWindow) {
-            const { dialogWindow } = this.elements;
+            const { dialogWindow, dialogWindowWrap } = this.elements;
             const isEmptyDialogWindow = !this.messages.length;
 
             if (isEmptyDialogWindow) {
-                dialogWindow.classList.remove(style['empty-dialog']);
+                dialogWindowWrap.classList.remove(style['empty-dialog']);
                 dialogWindow.innerHTML = '';
             }
 
             this.saveMessage(mgs.message);
 
-            const lastMgs = this.messages[this.messages.length - 1];
-            lastMgs.scrollIntoView(false);
+            this.scrollToLastMessage();
         }
     };
 
     private externalUserMsgHistorySubscribe = (mgs: SendMessageResProp[]): void => {
-        const { dialogWindow } = this.elements;
+        const { dialogWindow, dialogWindowWrap } = this.elements;
 
         this.messages = [];
 
         if (!mgs.length) {
-            dialogWindow.classList.add(style['empty-dialog']);
-            dialogWindow.innerHTML = 'Write your first message...';
+            dialogWindowWrap.classList.add(style['empty-dialog']);
+            dialogWindow.innerText = 'Write your first message...';
             return;
         }
 
-        dialogWindow.classList.remove(style['empty-dialog']);
+        dialogWindowWrap.classList.remove(style['empty-dialog']);
         dialogWindow.innerHTML = '';
 
         mgs.forEach(message => this.saveMessage(message));
+
+        this.scrollToLastMessage();
     };
 
     private currentExternalUserSubscribe = (currentUser: User | null): void => {
@@ -122,7 +123,20 @@ class ChatBlock extends Component {
         this.messages.push(newMessage);
     }
 
+    protected scrollToLastMessage(): void {
+        const lastMgs = this.messages[this.messages.length - 1];
+        lastMgs.scrollIntoView(false);
+    }
+
     protected childrenElements() {
+        const dialogWindowWrap = createElement(
+            {
+                tag: 'div',
+                style: [style['dialog-window'], style['empty-dialog']],
+                html: 'Select a user to start chatting',
+            },
+            true,
+        );
         return {
             externalUserWrap: createElement({ tag: 'div', style: style['external-user-wrap'] }),
             externalUserName: createElement({ tag: 'p' }),
@@ -130,11 +144,8 @@ class ChatBlock extends Component {
             textForm: createElement({ tag: 'form', style: style['text-form'] }),
             inputTextWrap: createElement({ tag: 'input', style: style['input-text-wrap'] }, true),
             submitTextBtn: createElement({ tag: 'button', text: 'Send' }),
-            dialogWindow: createElement({
-                tag: 'div',
-                style: [style['dialog-window'], style['empty-dialog']],
-                text: 'Select a user to start chatting',
-            }),
+            dialogWindow: <HTMLDivElement>dialogWindowWrap.firstElementChild,
+            dialogWindowWrap,
         };
     }
 
@@ -146,13 +157,13 @@ class ChatBlock extends Component {
             inputTextWrap,
             textForm,
             submitTextBtn,
-            dialogWindow,
+            dialogWindowWrap,
         } = this.elements;
 
         textForm.append(inputTextWrap, submitTextBtn);
         externalUserWrap.append(externalUserName, externalUserStatus);
 
-        this.contentWrap.append(externalUserWrap, dialogWindow, textForm);
+        this.contentWrap.append(externalUserWrap, dialogWindowWrap, textForm);
     }
 }
 
