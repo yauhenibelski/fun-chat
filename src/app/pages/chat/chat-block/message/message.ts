@@ -22,6 +22,13 @@ class Message extends Component {
         this.appendElements();
     }
 
+    protected getMessageStatus(): string {
+        const { isDelivered, isEdited, isReaded } = this.message.status;
+        if (isEdited) return 'edited';
+        if (isReaded) return 'readed';
+        return isDelivered ? 'delivered' : 'not delivered';
+    }
+
     protected childrenElements() {
         const { from, datetime, text } = this.message;
         return {
@@ -29,7 +36,7 @@ class Message extends Component {
             from: createElement({ tag: 'p', text: from === SessionStorage.getUserName() ? 'You' : from }),
             date: createElement({ tag: 'p', text: new Date(datetime).toLocaleString() }),
             messageText: createElement({ tag: 'p', style: style['message-text'], text }),
-            messageStatus: createElement({ tag: 'p', style: style.status, text: 'blabla' }),
+            messageStatus: createElement({ tag: 'p', style: style.status, text: this.getMessageStatus() }),
         };
     }
 

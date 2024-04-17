@@ -5,6 +5,7 @@ import { currentExternalUser$, externalUserMsgHistory$, msgSendResponse$ } from 
 import { ApiService } from '@shared/api-service';
 import { SendMessageRes, SendMessageResProp } from '@interfaces/send-message-response';
 import { SendMessageReq } from '@interfaces/send-message-request';
+import SessionStorage from '@shared/session-storage/session-storage';
 import style from './chat-block.module.scss';
 import type User from '../users/users-list/user/user';
 import { UserLogin } from '../../../types/user-login';
@@ -19,20 +20,36 @@ class ChatBlock extends Component {
         super(style);
 
         this.createComponent();
+
         currentExternalUser$.subscribe(this.currentExternalUserSubscribe);
         externalUserMsgHistory$.subscribe(this.externalUserMsgHistorySubscribe);
         msgSendResponse$.subscribe(this.msgSendResponseSubscribe);
     }
 
     private msgSendResponseSubscribe = (mgs: SendMessageRes | null): void => {
+        if (!currentExternalUser$.value) return;
         if (!mgs) return;
 
-        console.log(mgs);
+        const { login: currentExternalUserLogin } = currentExternalUser$.value.user;
+        const { from: fromUserLogin } = mgs.message;
 
-        this.saveMessage(mgs.message);
+        const isSelectedUserDialogWindow =
+            fromUserLogin === SessionStorage.getUserName() || currentExternalUserLogin === fromUserLogin;
 
-        const lastMgs = this.messages[this.messages.length - 1];
-        lastMgs.scrollIntoView(false);
+        if (isSelectedUserDialogWindow) {
+            const { dialogWindow } = this.elements;
+            const isEmptyDialogWindow = !this.messages.length;
+
+            if (isEmptyDialogWindow) {
+                dialogWindow.classList.remove(style['empty-dialog']);
+                dialogWindow.innerHTML = '';
+            }
+
+            this.saveMessage(mgs.message);
+
+            const lastMgs = this.messages[this.messages.length - 1];
+            lastMgs.scrollIntoView(false);
+        }
     };
 
     private externalUserMsgHistorySubscribe = (mgs: SendMessageResProp[]): void => {
