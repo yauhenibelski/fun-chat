@@ -16,3 +16,7 @@ export interface SendMessageResProp {
 export interface SendMessageRes {
     message: SendMessageResProp;
 }
+
+export interface MessagesRes {
+    messages: SendMessageResProp[];
+}

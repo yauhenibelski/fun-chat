@@ -49,9 +49,15 @@ class UsersList extends Component {
         this.users = {
             ...this.users,
             ...Object.fromEntries(
-                data.map(user => {
-                    return [user.login, new User(user)];
-                }),
+                data
+                    .filter(({ login }) => {
+                        const isAppLogin = login === SessionStorage.getUserName();
+
+                        return !isAppLogin && !(login in this.users);
+                    })
+                    .map(user => {
+                        return [user.login, new User(user)];
+                    }),
             ),
         };
         this.render();
@@ -63,10 +69,9 @@ class UsersList extends Component {
 
     protected appendElements(): void {
         Object.entries(this.users).forEach(([login, userObj]) => {
-            const isAppLogin = login === SessionStorage.getUserName();
             const isLoginMatchesSortValue = login.toLowerCase().includes(userSortValue$.value);
 
-            if (isLoginMatchesSortValue && !isAppLogin) {
+            if (isLoginMatchesSortValue) {
                 this.contentWrap.append(userObj.getElement());
             }
         });

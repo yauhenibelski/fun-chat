@@ -16,9 +16,9 @@ import SessionStorage from './session-storage/session-storage';
 export class ApiService {
     static readonly socket = new WebSocket('ws://localhost:4000/');
 
-    static readonly send = <Payload>(type: RequestType, data: Payload): void => {
+    static readonly send = <Payload>(type: RequestType, data: Payload, id?: string): void => {
         const body: ChatDto<Payload> = {
-            id: '',
+            id: id || '',
             type,
             payload: data,
         };
@@ -46,7 +46,7 @@ export class ApiService {
             if (dataDto.type === 'USER_INACTIVE') inActiveUsersResponse$.publish(dataDto.payload.users);
             if (dataDto.type === 'USER_EXTERNAL_LOGIN') userExternalLoginResponse$.publish(dataDto.payload);
             if (dataDto.type === 'USER_EXTERNAL_LOGOUT') userExternalLogoutResponse$.publish(dataDto.payload);
-            if (dataDto.type === 'MSG_FROM_USER') externalUserMsgHistory$.publish(dataDto.payload.messages);
+            if (dataDto.type === 'MSG_FROM_USER') externalUserMsgHistory$.publish(dataDto);
             if (dataDto.type === 'MSG_SEND') msgSendResponse$.publish(dataDto.payload);
 
             // case 'MSG_SEND': console.log(1);

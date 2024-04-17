@@ -1,8 +1,10 @@
 .host {
-    display: block;
+    display: flex;
 }
 .content-wrap {
     display: flex;
+    align-items: center;
+    width: 100%;
     cursor: pointer;
 
     &:hover {
@@ -36,4 +38,8 @@
         height: 5px;
         width: 5px;
     }
+}
+.unread {
+    font-size: small;
+    color: blue;
 }

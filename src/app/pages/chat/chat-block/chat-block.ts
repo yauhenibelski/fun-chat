@@ -3,9 +3,11 @@ import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
 import { currentExternalUser$, externalUserMsgHistory$, msgSendResponse$ } from '@shared/observables';
 import { ApiService } from '@shared/api-service';
-import { SendMessageRes, SendMessageResProp } from '@interfaces/send-message-response';
+import { SendMessageRes, MessagesRes, SendMessageResProp } from '@interfaces/send-message-response';
 import { SendMessageReq } from '@interfaces/send-message-request';
 import SessionStorage from '@shared/session-storage/session-storage';
+import { ChatDto } from '@interfaces/dto';
+import { getID } from '@utils/get-id';
 import style from './chat-block.module.scss';
 import type User from '../users/users-list/user/user';
 import { UserLogin } from '../../../types/user-login';
@@ -15,6 +17,7 @@ import Message from './message/message';
 class ChatBlock extends Component {
     protected elements = this.childrenElements();
     private messages: Message[] = [];
+    private requestID = getID();
 
     constructor() {
         super(style);
@@ -51,12 +54,20 @@ class ChatBlock extends Component {
         }
     };
 
-    private externalUserMsgHistorySubscribe = (mgs: SendMessageResProp[]): void => {
+    private externalUserMsgHistorySubscribe = (data: ChatDto<MessagesRes> | null): void => {
+        if (!data) return;
+
         const { dialogWindow, dialogWindowWrap } = this.elements;
+        const {
+            id: responseID,
+            payload: { messages },
+        } = data;
+
+        if (responseID !== this.requestID) return;
 
         this.messages = [];
 
-        if (!mgs.length) {
+        if (!messages.length) {
             dialogWindowWrap.classList.add(style['empty-dialog']);
             dialogWindow.innerText = 'Write your first message...';
             return;
@@ -65,7 +76,7 @@ class ChatBlock extends Component {
         dialogWindowWrap.classList.remove(style['empty-dialog']);
         dialogWindow.innerHTML = '';
 
-        mgs.forEach(message => this.saveMessage(message));
+        messages.forEach(message => this.saveMessage(message));
 
         this.scrollToLastMessage();
     };
@@ -82,11 +93,15 @@ class ChatBlock extends Component {
         externalUserName.innerText = currentUser.user.login;
         externalUserStatus.innerText = currentUser.user.isLogined ? 'online' : 'offline';
 
-        ApiService.send<UserLogin>('MSG_FROM_USER', {
-            user: {
-                login: currentUser.user.login,
+        ApiService.send<UserLogin>(
+            'MSG_FROM_USER',
+            {
+                user: {
+                    login: currentUser.user.login,
+                },
             },
-        });
+            this.requestID,
+        );
     };
 
     protected createComponent(): void {
@@ -102,12 +117,16 @@ class ChatBlock extends Component {
             event.preventDefault();
             if (!textField.value) return;
 
-            ApiService.send<SendMessageReq>('MSG_SEND', {
-                message: {
-                    text: textField.value,
-                    to: currentExternalUser$.value!.user.login,
+            ApiService.send<SendMessageReq>(
+                'MSG_SEND',
+                {
+                    message: {
+                        text: textField.value,
+                        to: currentExternalUser$.value!.user.login,
+                    },
                 },
-            });
+                getID(),
+            );
             textField.value = '';
         };
 
