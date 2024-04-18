@@ -5,6 +5,8 @@ import {
     activeUsersResponse$,
     externalUserMsgHistory$,
     inActiveUsersResponse$,
+    msgDeliverResponse$,
+    msgReadResponse$,
     msgSendResponse$,
     userExternalLoginResponse$,
     userExternalLogoutResponse$,
@@ -48,16 +50,15 @@ export class ApiService {
             if (dataDto.type === 'USER_EXTERNAL_LOGOUT') userExternalLogoutResponse$.publish(dataDto.payload);
             if (dataDto.type === 'MSG_FROM_USER') externalUserMsgHistory$.publish(dataDto);
             if (dataDto.type === 'MSG_SEND') msgSendResponse$.publish(dataDto.payload);
+            if (dataDto.type === 'MSG_DELIVER') msgDeliverResponse$.publish(dataDto.payload);
+            if (dataDto.type === 'MSG_READ') msgReadResponse$.publish(dataDto.payload);
 
-            // case 'MSG_SEND': console.log(1);
-            // case 'MSG_READ': console.log(1);
-            // case 'MSG_DELIVER': console.log(1);
             // case 'MSG_EDIT': console.log(1);
             // case 'MSG_DELETE': console.log(1);
 
             if (dataDto.type === 'ERROR') console.log(dataDto, 'error');
 
-            console.log(event);
+            // console.log(event);
         };
     };
 

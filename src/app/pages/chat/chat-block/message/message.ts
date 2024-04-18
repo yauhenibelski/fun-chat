@@ -1,7 +1,7 @@
 import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
-import { SendMessageResProp } from '@interfaces/send-message-response';
+import { MessageStatus, SendMessageResProp } from '@interfaces/send-message-response';
 import SessionStorage from '@shared/session-storage/session-storage';
 import style from './message.module.scss';
 
@@ -22,11 +22,24 @@ class Message extends Component {
         this.appendElements();
     }
 
+    updateMessage(status: boolean, type: keyof MessageStatus): void {
+        this.message.status[type] = status;
+        this.render();
+    }
+
     protected getMessageStatus(): string {
-        const { isDelivered, isEdited, isReaded } = this.message.status;
-        if (isEdited) return 'edited';
-        if (isReaded) return 'readed';
-        return isDelivered ? 'delivered' : 'not delivered';
+        const {
+            from,
+            status: { isDelivered, isEdited, isReaded },
+        } = this.message;
+        const isOwnMessage = from === SessionStorage.getUserName();
+
+        if (isOwnMessage) {
+            if (isReaded) return 'readed';
+            return isDelivered ? 'delivered' : 'not delivered';
+        }
+
+        return isEdited ? 'edited' : '';
     }
 
     protected childrenElements() {

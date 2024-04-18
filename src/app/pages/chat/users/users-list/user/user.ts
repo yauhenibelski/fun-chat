@@ -10,7 +10,6 @@ import {
     userExternalLogoutResponse$,
 } from '@shared/observables';
 import { MessagesRes, SendMessageRes } from '@interfaces/send-message-response';
-import SessionStorage from '@shared/session-storage/session-storage';
 import { getID } from '@utils/get-id';
 import { ChatDto } from '@interfaces/dto';
 import { ApiService } from '@shared/api-service';
@@ -39,6 +38,13 @@ class User extends Component {
         );
     }
 
+    resetUnreadMessageCount(): void {
+        if (!this.unreadMessageCount) return;
+
+        this.unreadMessageCount = 0;
+        this.render();
+    }
+
     private externalUserMsgHistorySubscribe = (data: ChatDto<MessagesRes> | null): void => {
         if (!data) return;
 
@@ -61,13 +67,9 @@ class User extends Component {
     private msgSendResponseSubscribe = (mgs: SendMessageRes | null): void => {
         if (!mgs) return;
 
-        const currentExternalUserLogin = currentExternalUser$.value?.user.login;
         const { from: fromUserLogin } = mgs.message;
 
-        const isSelectedUserDialogWindow =
-            fromUserLogin === SessionStorage.getUserName() || currentExternalUserLogin === fromUserLogin;
-
-        if (!isSelectedUserDialogWindow && fromUserLogin === this.user.login) {
+        if (fromUserLogin === this.user.login) {
             this.unreadMessageCount += 1;
             this.render();
         }

@@ -1,15 +1,15 @@
-interface IsEdited {
+export interface IsEdited {
     isEdited: boolean;
 }
 
-interface IsDeleted {
+export interface IsDeleted {
     isDeleted: boolean;
 }
+export interface Message {
+    id: string;
+    text: string;
+}
 
-export interface MessageInteraction<Status extends keyof (IsDeleted & IsEdited)> {
-    message: {
-        id: string;
-        text: string;
-        status: Pick<IsDeleted & IsEdited, Status>;
-    };
+export interface MessageChangeStatus {
+    message: Pick<Message, 'id'>;
 }

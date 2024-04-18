@@ -2,6 +2,7 @@
     display: flex;
     position: relative;
     flex-basis: 69%;
+    max-width: 69%;
     height: 100%;
 }
 .content-wrap {
@@ -11,6 +12,7 @@
     border-radius: 5px;
     padding: 5px;
     width: 100%;
+    box-sizing: border-box;
 }
 .external-user-wrap {
     display: flex;
@@ -50,7 +52,6 @@
     overflow: hidden;
 
     div {
-        width: 100%;
         overflow: scroll;
     }
 }
