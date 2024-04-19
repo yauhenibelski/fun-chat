@@ -3,6 +3,8 @@ import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
 import {
     currentExternalUser$,
+    editedMessage$,
+    editedMessageResponse$,
     externalUserMsgHistory$,
     msgDeleteResponse$,
     msgDeliverResponse$,
@@ -11,7 +13,7 @@ import {
 } from '@shared/observables';
 import { ApiService } from '@shared/api-service';
 import { SendMessageRes, MessagesRes, SendMessageResProp, MessageStatus } from '@interfaces/send-message-response';
-import { SendMessageReq } from '@interfaces/send-message-request';
+import { ChangeStatusMessageReq, SendMessageReq } from '@interfaces/send-message-request';
 import SessionStorage from '@shared/session-storage/session-storage';
 import { ChatDto } from '@interfaces/dto';
 import { getID } from '@utils/get-id';
@@ -21,7 +23,7 @@ import type User from '../users/users-list/user/user';
 import { UserLogin } from '../../../types/user-login';
 import Message from './message/message';
 import { MessageStatusRes } from '../../../types/message-delivery-status';
-import MessageSeparator from './message/new-message-separator/new-message-separator';
+import MessageSeparator from './new-message-separator/new-message-separator';
 import { MessageInteraction } from '../../../types/message-interaction';
 
 @CustomSelector('Chat-block')
@@ -43,8 +45,23 @@ class ChatBlock extends Component {
         msgSendResponse$.subscribe(this.msgSendResponseSubscribe);
         msgDeliverResponse$.subscribe(this.msgStatusResponseSubscribe('isDelivered'));
         msgReadResponse$.subscribe(this.msgStatusResponseSubscribe('isReaded'));
+        editedMessageResponse$.subscribe(this.msgStatusResponseSubscribe('isEdited'));
         msgDeleteResponse$.subscribe(this.msgDeleteResponseSubscribe);
+        editedMessage$.subscribe(this.editedMessageSubscribe);
     }
+
+    private editedMessageSubscribe = (mgs: Message | null): void => {
+        if (!mgs) return;
+
+        const { message } = mgs;
+        if (message.id in this.messages) {
+            const { inputTextWrap } = this.elements;
+            const textField = <HTMLInputElement>inputTextWrap.firstChild;
+
+            textField.value = message.text;
+            textField.focus();
+        }
+    };
 
     private msgDeleteResponseSubscribe = (mgs: MessageInteraction<'isDeleted'> | null): void => {
         if (!mgs) return;
@@ -75,6 +92,7 @@ class ChatBlock extends Component {
     private msgStatusResponseSubscribe = <Status extends keyof MessageStatus>(statusType: Status) => {
         return (mgs: MessageStatusRes<Status> | null): void => {
             if (!mgs) return;
+
             const hasMessageInMessages = mgs.message.id in this.messages;
 
             if (!hasMessageInMessages) return;
@@ -82,13 +100,22 @@ class ChatBlock extends Component {
             const { message } = mgs;
             const isMessageForUser = this.messages[message.id].message.to === SessionStorage.getUserName();
 
-            this.messages[message.id].updateMessage(message.status[statusType], statusType);
+            if (statusType === 'isEdited') {
+                const currentMessage = this.messages[message.id];
+                const { message: editedMessage } = currentMessage;
+
+                editedMessage.text = message.text;
+
+                editedMessage$.publish(null);
+            }
 
             if (statusType === 'isReaded' && isMessageForUser) {
                 delete this.newMessages[mgs.message.id];
                 currentExternalUser$.value?.resetUnreadMessageCount();
                 this.removeMessageSeparator();
             }
+
+            this.messages[message.id].updateMessage(message.status[statusType], statusType);
         };
     };
 
@@ -185,25 +212,43 @@ class ChatBlock extends Component {
         submitTextBtn.disabled = true;
 
         dialogWindowWrap.onclick = () => this.setReadMessageStatus();
-        dialogWindowWrap.onmousemove = () => this.setReadMessageStatus();
+        dialogWindowWrap.onwheel = () => this.setReadMessageStatus();
 
-        textForm.onsubmit = (event: Event) => {
-            event.preventDefault();
-            if (!textField.value) return;
+        textForm.onsubmit = this.sendEditMassage;
 
+        this.appendElements();
+    }
+
+    protected sendEditMassage = (event: Event): void => {
+        event.preventDefault();
+        this.setReadMessageStatus();
+
+        const { inputTextWrap } = this.elements;
+        const textField = <HTMLInputElement>inputTextWrap.firstChild;
+        const isEditMassage = Boolean(editedMessage$.value);
+
+        if (!textField.value) return;
+
+        if (isEditMassage) {
+            ApiService.send<ChangeStatusMessageReq>('MSG_EDIT', {
+                message: {
+                    id: editedMessage$.value!.message.id,
+                    text: textField.value,
+                },
+            });
+        }
+
+        if (!isEditMassage) {
             ApiService.send<SendMessageReq>('MSG_SEND', {
                 message: {
                     text: textField.value,
                     to: currentExternalUser$.value!.user.login,
                 },
             });
-            textField.value = '';
+        }
 
-            this.setReadMessageStatus();
-        };
-
-        this.appendElements();
-    }
+        textField.value = '';
+    };
 
     protected saveMessage(message: SendMessageResProp): void {
         const { dialogWindow } = this.elements;

@@ -4,5 +4,6 @@ export type MessageStatusRes<Status extends keyof MessageStatus> = {
     message: {
         id: string;
         status: Pick<MessageStatus, Status>;
+        text: string;
     };
 };

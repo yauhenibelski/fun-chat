@@ -36,6 +36,11 @@
     align-self: flex-end;
 }
 
+.status-wrap {
+    display: flex;
+    justify-content: space-between;
+}
+
 .options-wrap {
     display: flex;
     height: 0;
