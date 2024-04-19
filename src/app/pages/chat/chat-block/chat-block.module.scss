@@ -18,11 +18,12 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 30px;
+    min-height: 30px;
     border-bottom: solid;
 }
-.status {
-    // TODO: color status
+
+.user-name {
+    word-break: break-all;
 }
 
 .input-text-wrap {

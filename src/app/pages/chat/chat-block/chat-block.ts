@@ -10,6 +10,8 @@ import {
     msgDeliverResponse$,
     msgReadResponse$,
     msgSendResponse$,
+    userExternalLoginResponse$,
+    userExternalLogoutResponse$,
 } from '@shared/observables';
 import { ApiService } from '@shared/api-service';
 import { SendMessageRes, MessagesRes, SendMessageResProp, MessageStatus } from '@interfaces/send-message-response';
@@ -18,6 +20,7 @@ import SessionStorage from '@shared/session-storage/session-storage';
 import { ChatDto } from '@interfaces/dto';
 import { getID } from '@utils/get-id';
 import { MessageChangeStatus } from '@interfaces/message-interaction';
+import { UserAuthRes } from '@interfaces/user-authentication-response';
 import style from './chat-block.module.scss';
 import type User from '../users/users-list/user/user';
 import { UserLogin } from '../../../types/user-login';
@@ -34,6 +37,7 @@ class ChatBlock extends Component {
     private lastMessageElem: HTMLElement | null = null;
     private newMessageSeparator = new MessageSeparator();
     private requestID = getID();
+    private externalUserNameCache = '';
 
     constructor() {
         super(style);
@@ -48,7 +52,24 @@ class ChatBlock extends Component {
         editedMessageResponse$.subscribe(this.msgStatusResponseSubscribe('isEdited'));
         msgDeleteResponse$.subscribe(this.msgDeleteResponseSubscribe);
         editedMessage$.subscribe(this.editedMessageSubscribe);
+        userExternalLoginResponse$.subscribe(this.userExternalLoginOrLogoutResSubscribe);
+        userExternalLogoutResponse$.subscribe(this.userExternalLoginOrLogoutResSubscribe);
     }
+
+    private userExternalLoginOrLogoutResSubscribe = (data: UserAuthRes | null): void => {
+        if (!data) return;
+        if (!currentExternalUser$.value) return;
+
+        const { login, isLogined } = data.user;
+        const { login: currentUserLogin } = currentExternalUser$.value.user;
+        const { color, status } = this.getColorStatus(isLogined);
+        const { externalUserStatus } = this.elements;
+
+        if (login === currentUserLogin) {
+            externalUserStatus.innerText = status;
+            externalUserStatus.style.color = color;
+        }
+    };
 
     private editedMessageSubscribe = (mgs: Message | null): void => {
         if (!mgs) return;
@@ -182,25 +203,44 @@ class ChatBlock extends Component {
     private currentExternalUserSubscribe = (currentUser: User | null): void => {
         if (!currentUser) return;
 
+        const { isLogined, login } = currentUser.user;
+        const isSelectedUser = this.externalUserNameCache === login;
+
+        if (isSelectedUser) return;
+
         const { externalUserName, externalUserStatus, inputTextWrap, submitTextBtn } = this.elements;
         const textField = <HTMLInputElement>inputTextWrap.firstChild;
+        const { color, status } = this.getColorStatus(isLogined);
 
+        textField.value = '';
         textField.disabled = false;
+
         submitTextBtn.disabled = false;
 
-        externalUserName.innerText = currentUser.user.login;
-        externalUserStatus.innerText = currentUser.user.isLogined ? 'online' : 'offline';
+        externalUserName.innerText = login;
+
+        externalUserStatus.innerText = status;
+        externalUserStatus.style.color = color;
 
         ApiService.send<UserLogin>(
             'MSG_FROM_USER',
             {
                 user: {
-                    login: currentUser.user.login,
+                    login,
                 },
             },
             this.requestID,
         );
+
+        this.externalUserNameCache = login;
     };
+
+    private getColorStatus(isLogined: boolean) {
+        return {
+            status: isLogined ? 'online' : 'offline',
+            color: isLogined ? 'green' : 'red',
+        };
+    }
 
     protected createComponent(): void {
         const { inputTextWrap, textForm, submitTextBtn, dialogWindowWrap } = this.elements;
@@ -297,8 +337,8 @@ class ChatBlock extends Component {
         );
         return {
             externalUserWrap: createElement({ tag: 'div', style: style['external-user-wrap'] }),
-            externalUserName: createElement({ tag: 'p' }),
-            externalUserStatus: createElement({ tag: 'p', style: style.status }),
+            externalUserName: createElement({ tag: 'p', style: style['user-name'] }),
+            externalUserStatus: createElement({ tag: 'p' }),
             textForm: createElement({ tag: 'form', style: style['text-form'] }),
             inputTextWrap: createElement({ tag: 'input', style: style['input-text-wrap'] }, true),
             submitTextBtn: createElement({ tag: 'button', text: 'Send' }),

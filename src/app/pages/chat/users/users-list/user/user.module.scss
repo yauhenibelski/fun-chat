@@ -5,6 +5,8 @@
     display: flex;
     align-items: center;
     width: 100%;
+    word-break: break-all;
+    position: relative;
     cursor: pointer;
 
     &:hover {
@@ -23,10 +25,12 @@
 
     &::before {
         content: '';
+        position: absolute;
         background-color: red;
         border-radius: 50%;
         height: 5px;
         width: 5px;
+        left: 0;
     }
 }
 

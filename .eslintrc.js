@@ -8,6 +8,7 @@ module.exports = {
         'airbnb-base',
         'plugin:prettier/recommended',
     ],
+    // noInlineConfig: true,
     plugins: ['@typescript-eslint', 'prettier'],
     parser: '@typescript-eslint/parser',
     rules: {
