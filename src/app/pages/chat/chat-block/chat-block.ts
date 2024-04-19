@@ -4,6 +4,7 @@ import createElement from '@utils/create-element';
 import {
     currentExternalUser$,
     externalUserMsgHistory$,
+    msgDeleteResponse$,
     msgDeliverResponse$,
     msgReadResponse$,
     msgSendResponse$,
@@ -21,6 +22,7 @@ import { UserLogin } from '../../../types/user-login';
 import Message from './message/message';
 import { MessageStatusRes } from '../../../types/message-delivery-status';
 import MessageSeparator from './message/new-message-separator/new-message-separator';
+import { MessageInteraction } from '../../../types/message-interaction';
 
 @CustomSelector('Chat-block')
 class ChatBlock extends Component {
@@ -41,10 +43,25 @@ class ChatBlock extends Component {
         msgSendResponse$.subscribe(this.msgSendResponseSubscribe);
         msgDeliverResponse$.subscribe(this.msgStatusResponseSubscribe('isDelivered'));
         msgReadResponse$.subscribe(this.msgStatusResponseSubscribe('isReaded'));
+        msgDeleteResponse$.subscribe(this.msgDeleteResponseSubscribe);
     }
 
+    private msgDeleteResponseSubscribe = (mgs: MessageInteraction<'isDeleted'> | null): void => {
+        if (!mgs) return;
+
+        const { id } = mgs.message;
+
+        if (!this.messages[id]) return;
+
+        this.messages[id].getElement().remove();
+        delete this.messages[id];
+
+        if (this.newMessages[id]) delete this.newMessages[id];
+        if (this.newMessageSeparator.isShow && !this.hasUnreadMessage()) this.removeMessageSeparator();
+    };
+
     private setReadMessageStatus(): void {
-        if (!Object.values(this.newMessages).length) return;
+        if (!this.hasUnreadMessage()) return;
 
         Object.values(this.newMessages).forEach(({ message }) => {
             ApiService.send<MessageChangeStatus>('MSG_READ', {
@@ -78,15 +95,14 @@ class ChatBlock extends Component {
     private msgSendResponseSubscribe = (mgs: SendMessageRes | null): void => {
         if (!currentExternalUser$.value) return;
         if (!mgs) return;
-
         const { login: currentExternalUserLogin } = currentExternalUser$.value.user;
         const { from: fromUserLogin } = mgs.message;
+        const { dialogWindow, dialogWindowWrap } = this.elements;
 
         const isSelectedUserDialogWindow =
             fromUserLogin === SessionStorage.getUserName() || currentExternalUserLogin === fromUserLogin;
 
         if (isSelectedUserDialogWindow) {
-            const { dialogWindow, dialogWindowWrap } = this.elements;
             const isEmptyDialogWindow = !Object.keys(this.messages).length && !Object.keys(this.newMessages).length;
             const isOwnMessage = fromUserLogin === SessionStorage.getUserName();
 
@@ -99,7 +115,6 @@ class ChatBlock extends Component {
 
             if (isOwnMessage) this.scrollToElem('last_message');
             if (!isOwnMessage) this.scrollToElem('message_separator');
-            if (this.hasUnreadMessage()) this.addScrollEvent();
         }
     };
 
@@ -130,7 +145,6 @@ class ChatBlock extends Component {
 
         if (this.hasUnreadMessage()) {
             this.scrollToElem('message_separator');
-            this.addScrollEvent();
 
             return;
         }
@@ -171,6 +185,7 @@ class ChatBlock extends Component {
         submitTextBtn.disabled = true;
 
         dialogWindowWrap.onclick = () => this.setReadMessageStatus();
+        dialogWindowWrap.onmousemove = () => this.setReadMessageStatus();
 
         textForm.onsubmit = (event: Event) => {
             event.preventDefault();
@@ -224,16 +239,6 @@ class ChatBlock extends Component {
 
     protected hasUnreadMessage(): boolean {
         return Boolean(Object.keys(this.newMessages).length);
-    }
-
-    protected addScrollEvent(): void {
-        const { dialogWindow } = this.elements;
-        setTimeout(() => {
-            dialogWindow.onscroll = () => {
-                this.setReadMessageStatus();
-                dialogWindow.onscroll = null;
-            };
-        });
     }
 
     protected childrenElements() {

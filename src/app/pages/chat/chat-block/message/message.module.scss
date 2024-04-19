@@ -7,7 +7,6 @@
     flex-direction: column;
     width: max-content;
     max-width: 60%;
-    // height: 20px;
     background-color: #c3c3c3;
     margin: 10px;
     padding: 10px;
@@ -22,6 +21,7 @@
 .right {
     align-self: flex-end;
     background-color: #f0f0f0;
+    cursor: context-menu;
 }
 
 .about-wrap {
@@ -34,4 +34,27 @@
 }
 .status {
     align-self: flex-end;
+}
+
+.options-wrap {
+    display: flex;
+    height: 0;
+    overflow: hidden;
+}
+
+.options-wrap-open {
+    height: 20px;
+    border-top: solid gray;
+    margin-top: 5px;
+    padding-top: 5px;
+
+    button {
+        flex-basis: 50%;
+        border: none;
+
+        &:hover {
+            background-color: #dadada;
+            font-size: small;
+        }
+    }
 }

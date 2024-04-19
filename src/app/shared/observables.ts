@@ -4,6 +4,7 @@ import type User from '@pages/chat/users/users-list/user/user';
 import { SendMessageRes, MessagesRes } from '@interfaces/send-message-response';
 import { ChatDto } from '@interfaces/dto';
 import { MessageStatusRes } from '../types/message-delivery-status';
+import { MessageInteraction } from '../types/message-interaction';
 
 export const userLoginResponse$ = new Observable<UserAuthRes | null>(null);
 export const userLogoutResponse$ = new Observable<UserAuthRes | null>(null);
@@ -17,5 +18,4 @@ export const currentExternalUser$ = new Observable<User | null>(null);
 export const externalUserMsgHistory$ = new Observable<ChatDto<MessagesRes> | null>(null);
 export const msgDeliverResponse$ = new Observable<MessageStatusRes<'isDelivered'> | null>(null);
 export const msgReadResponse$ = new Observable<MessageStatusRes<'isReaded'> | null>(null);
-
-// msgReadResponse$.subscribe(console.log);
+export const msgDeleteResponse$ = new Observable<MessageInteraction<'isDeleted'> | null>(null);

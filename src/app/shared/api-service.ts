@@ -5,6 +5,7 @@ import {
     activeUsersResponse$,
     externalUserMsgHistory$,
     inActiveUsersResponse$,
+    msgDeleteResponse$,
     msgDeliverResponse$,
     msgReadResponse$,
     msgSendResponse$,
@@ -52,13 +53,13 @@ export class ApiService {
             if (dataDto.type === 'MSG_SEND') msgSendResponse$.publish(dataDto.payload);
             if (dataDto.type === 'MSG_DELIVER') msgDeliverResponse$.publish(dataDto.payload);
             if (dataDto.type === 'MSG_READ') msgReadResponse$.publish(dataDto.payload);
+            if (dataDto.type === 'MSG_DELETE') msgDeleteResponse$.publish(dataDto.payload);
 
             // case 'MSG_EDIT': console.log(1);
-            // case 'MSG_DELETE': console.log(1);
 
             if (dataDto.type === 'ERROR') console.log(dataDto, 'error');
 
-            // console.log(event);
+            console.log(event);
         };
     };
 

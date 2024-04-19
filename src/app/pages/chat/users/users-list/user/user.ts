@@ -5,6 +5,7 @@ import createElement from '@utils/create-element';
 import {
     currentExternalUser$,
     externalUserMsgHistory$,
+    msgDeleteResponse$,
     msgSendResponse$,
     userExternalLoginResponse$,
     userExternalLogoutResponse$,
@@ -15,11 +16,12 @@ import { ChatDto } from '@interfaces/dto';
 import { ApiService } from '@shared/api-service';
 import style from './user.module.scss';
 import { UserLogin } from '../../../../../types/user-login';
+import { MessageInteraction } from '../../../../../types/message-interaction';
 
 @CustomSelector('User')
 class User extends Component {
     private requestID = getID();
-    public unreadMessageCount = 0;
+    private newMessageID: string[] = [];
     protected elements = this.childrenElements();
 
     constructor(public user: UserAuthPropRes) {
@@ -39,9 +41,9 @@ class User extends Component {
     }
 
     resetUnreadMessageCount(): void {
-        if (!this.unreadMessageCount) return;
+        if (!this.newMessageID.length) return;
 
-        this.unreadMessageCount = 0;
+        this.newMessageID = [];
         this.render();
     }
 
@@ -55,10 +57,10 @@ class User extends Component {
 
         if (responseID !== this.requestID) return;
 
-        this.unreadMessageCount = 0;
+        this.newMessageID = [];
 
         messages.forEach(mgs => {
-            if (mgs.from === this.user.login && !mgs.status.isReaded) this.unreadMessageCount += 1;
+            if (mgs.from === this.user.login && !mgs.status.isReaded) this.newMessageID.push(mgs.id);
         });
 
         this.render();
@@ -67,10 +69,10 @@ class User extends Component {
     private msgSendResponseSubscribe = (mgs: SendMessageRes | null): void => {
         if (!mgs) return;
 
-        const { from: fromUserLogin } = mgs.message;
+        const { from: fromUserLogin, id } = mgs.message;
 
         if (fromUserLogin === this.user.login) {
-            this.unreadMessageCount += 1;
+            this.newMessageID.push(id);
             this.render();
         }
     };
@@ -84,11 +86,22 @@ class User extends Component {
         }
     };
 
+    protected msgDeleteResponseSubscribe = (data: MessageInteraction<'isDeleted'> | null) => {
+        if (!data) return;
+        const IDindex = this.newMessageID.indexOf(data.message.id);
+
+        if (IDindex !== -1) {
+            this.newMessageID.splice(IDindex, 1);
+            this.render();
+        }
+    };
+
     protected connectedCallback(): void {
         userExternalLoginResponse$.subscribe(this.updateUserSubscribe);
         userExternalLogoutResponse$.subscribe(this.updateUserSubscribe);
         msgSendResponse$.subscribe(this.msgSendResponseSubscribe);
         externalUserMsgHistory$.subscribe(this.externalUserMsgHistorySubscribe);
+        msgDeleteResponse$.subscribe(this.msgDeleteResponseSubscribe);
     }
 
     protected disconnectedCallback(): void {
@@ -96,6 +109,7 @@ class User extends Component {
         userExternalLogoutResponse$.unsubscribe(this.updateUserSubscribe);
         msgSendResponse$.unsubscribe(this.msgSendResponseSubscribe);
         externalUserMsgHistory$.unsubscribe(this.externalUserMsgHistorySubscribe);
+        msgDeleteResponse$.unsubscribe(this.msgDeleteResponseSubscribe);
     }
 
     protected createComponent(): void {
@@ -106,7 +120,7 @@ class User extends Component {
 
     protected childrenElements() {
         return {
-            unreadMessage: createElement({ tag: 'span', style: style.unread, text: `${this.unreadMessageCount}` }),
+            unreadMessage: createElement({ tag: 'span', style: style.unread, text: `${this.newMessageID.length}` }),
             userName: createElement({ tag: 'p', text: this.user.login }),
             userWrap: createElement({
                 tag: 'div',
@@ -122,7 +136,7 @@ class User extends Component {
 
         this.contentWrap.append(userWrap);
 
-        if (this.unreadMessageCount) this.contentWrap.append(unreadMessage);
+        if (this.newMessageID.length) this.contentWrap.append(unreadMessage);
     }
 }
 
