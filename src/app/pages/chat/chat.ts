@@ -5,6 +5,7 @@ import style from './chat.module.scss';
 import Header from './header/header';
 import Users from './users/users';
 import ChatBlock from './chat-block/chat-block';
+import Footer from './footer/footer';
 
 @CustomSelector('Chat-page')
 class ChatPage extends Component {
@@ -23,6 +24,7 @@ class ChatPage extends Component {
     protected childrenElements() {
         return {
             header: new Header().getElement(),
+            footer: new Footer().getElement(),
             users: new Users().getElement(),
             chatBlock: new ChatBlock().getElement(),
             chatWrap: createElement({ tag: 'div', style: style['chat-wrap'] }),
@@ -30,11 +32,11 @@ class ChatPage extends Component {
     }
 
     protected appendElements(): void {
-        const { header, users, chatWrap, chatBlock } = this.elements;
+        const { header, users, chatWrap, chatBlock, footer } = this.elements;
 
         chatWrap.append(users, chatBlock);
 
-        this.contentWrap.append(header, chatWrap);
+        this.contentWrap.append(header, chatWrap, footer);
     }
 }
 

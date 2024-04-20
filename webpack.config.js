@@ -22,6 +22,10 @@ module.exports = ({ develop }) => ({
     module: {
         rules: [
             {
+                test: /\.html$/i,
+                loader: "html-loader",
+              },
+            {
                 test: /\.[tj]s$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,

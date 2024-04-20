@@ -6,12 +6,12 @@ interface CreateElementProps<T> {
     html?: string;
 }
 
-const setStyle = (elem: HTMLElement, style: string | string[]): void => {
-    if (style instanceof Array) {
-        elem.classList.add(...style.filter(style => style));
+const setStyle = (elem: HTMLElement, styles: string | string[]): void => {
+    if (styles instanceof Array) {
+        elem.classList.add(...styles.filter(style => style));
     }
-    if (typeof style === 'string') {
-        elem.classList.add(style);
+    if (typeof styles === 'string') {
+        elem.classList.add(styles);
     }
 };
 
