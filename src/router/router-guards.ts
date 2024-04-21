@@ -3,30 +3,16 @@ import { RoutePath } from './types/path.type';
 import { redirectTo } from './utils/redirect';
 import { Routes } from './routes.const';
 
-const guards: { [key in keyof typeof Routes]: (path: RoutePath) => boolean } = {
-    login: path => {
-        if (path !== 'login') return true;
-
-        if (SessionStorage.isLogined()) {
-            redirectTo('chat');
-            return false;
-        }
-
-        return true;
+const guards: { [key in keyof typeof Routes]: () => boolean } = {
+    login: () => {
+        return SessionStorage.isLogined() ? (redirectTo('chat'), false) : true;
     },
-    chat: path => {
-        if (path !== 'chat') return true;
-
-        if (!SessionStorage.isLogined()) {
-            redirectTo('login');
-            return false;
-        }
-
-        return true;
+    chat: () => {
+        return SessionStorage.isLogined() ? true : (redirectTo('login'), false);
     },
-    about: path => !!path,
+    about: () => true,
 } as const;
 
 export const canActivate = (path: RoutePath): boolean => {
-    return guards[path](path);
+    return guards[path]();
 };
