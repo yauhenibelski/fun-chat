@@ -1,6 +1,7 @@
 import { renderPage } from './utils/render-page';
 import { Routes } from './routes.const';
 import { redirectTo } from './utils/redirect';
+import { listenHash } from './utils/listen-hash';
 
 export const router = (): void => {
     const hash = window.location.hash.slice(1);
@@ -15,8 +16,5 @@ export const router = (): void => {
         renderPage(hash);
     }
 
-    window.onhashchange = () => {
-        const hash = window.location.hash.slice(1);
-        renderPage(hash);
-    };
+    listenHash();
 };

@@ -48,7 +48,6 @@ class LoginPage extends Component {
     protected matchInputValue(input: HTMLInputElement, minLength: number): boolean {
         const { value, validity } = input;
         if (value) {
-            // eslint-disable-next-line no-useless-escape
             if (!value.match(`^[a-zA-Z\-]{${minLength}}`)) {
                 input.setCustomValidity(`Minimum length ${minLength} characters`);
                 return false;

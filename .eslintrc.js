@@ -8,20 +8,15 @@ module.exports = {
         'airbnb-base',
         'plugin:prettier/recommended',
     ],
-    // noInlineConfig: true,
+    noInlineConfig: true,
     plugins: ['@typescript-eslint', 'prettier'],
     parser: '@typescript-eslint/parser',
     rules: {
         'class-methods-use-this': 'off',
         '@typescript-eslint/no-explicit-any': 'error',
-        '@typescript-eslint/ban-types': 'off',
         'import/prefer-default-export': 'off',
         'no-useless-constructor': 'warn',
         'lines-between-class-members': 'off',
-        'no-shadow': 'warn',
-        'no-return-assign': 'off',
-        'no-param-reassign': 'warn',
-        'no-unused-vars': 'off',
         'import/extensions': [
             'off',
             'ignorePackages',
@@ -32,5 +27,11 @@ module.exports = {
         ],
         'import/no-unresolved': 'off',
         'no-undef': 'off',
+        // --------  off rules by agreement below --------
+        'no-empty-function': 'warn',
+        'no-redeclare': 'warn',
+        'no-unused-vars': 'off',
+        '@typescript-eslint/ban-types': 'off',
+        'no-useless-escape': 'off',
     },
 };

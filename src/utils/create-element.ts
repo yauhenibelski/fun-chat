@@ -1,4 +1,3 @@
-/* eslint-disable no-redeclare */
 interface CreateElementProps<T> {
     tag: T;
     style?: string | string[];

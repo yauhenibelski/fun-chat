@@ -1,13 +1,11 @@
-/* eslint-disable no-empty-function */
-/* eslint-disable no-underscore-dangle */
 type Subscriber<T> = (data: T) => void;
 
 export class Observable<T> {
-    constructor(protected _value: T) {}
+    constructor(protected currentValue: T) {}
     private observers: Subscriber<T>[] = [];
 
     get value() {
-        return this._value;
+        return this.currentValue;
     }
 
     public subscribe(subscriber: Subscriber<T>): void {
@@ -20,7 +18,7 @@ export class Observable<T> {
     }
 
     public publish(data: T): void {
-        this._value = data;
+        this.currentValue = data;
         this.observers.forEach(callback => {
             callback(data);
         });
