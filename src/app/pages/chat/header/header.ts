@@ -25,9 +25,13 @@ class Header extends Component {
     }
 
     protected createComponent(): void {
-        const { infoBtn } = this.elements;
+        const { infoBtn, logoutBtn } = this.elements;
 
         infoBtn.onclick = () => redirectTo('about');
+        logoutBtn.onclick = () => {
+            SessionStorage.clear();
+            location.reload();
+        };
 
         this.appendElements();
     }

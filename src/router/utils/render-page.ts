@@ -1,14 +1,17 @@
 import { pages } from '../pages.const';
 import { Routes } from '../routes.const';
+import { canActivate } from '../router-guards';
+import { RoutePath } from '../types/path.type';
 
-export const renderPage = (path: string) => {
-    if (path in Routes) {
-        const routOutput = <HTMLElement>document.querySelector('.router');
-        // const currentPage = <HTMLElement>routOutput.firstElementChild;
-        const nextPage = pages[path as keyof typeof Routes];
+export const renderPage = (path: string): void => {
+    if (!(path in Routes)) return;
+    if (!canActivate(path as RoutePath)) return;
 
-        routOutput.innerHTML = '';
+    const routOutput = <HTMLElement>document.querySelector('.router');
+    // const currentPage = <HTMLElement>routOutput.firstElementChild;
+    const nextPage = pages[path as RoutePath];
 
-        routOutput.append(nextPage);
-    }
+    routOutput.innerHTML = '';
+
+    routOutput.append(nextPage);
 };

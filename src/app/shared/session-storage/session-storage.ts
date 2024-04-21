@@ -8,6 +8,10 @@ const SessionStorage = {
         isLogined: false,
     },
 
+    clear(): void {
+        this.storage.clear();
+    },
+
     checkStorage(): void {
         const app = this.storage.getItem(this.keyName);
 

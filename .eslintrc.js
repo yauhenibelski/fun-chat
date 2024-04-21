@@ -30,6 +30,7 @@ module.exports = {
         // --------  off rules by agreement below --------
         'no-empty-function': 'warn',
         'no-redeclare': 'warn',
+        'no-restricted-globals': 'off',
         'no-unused-vars': 'off',
         '@typescript-eslint/ban-types': 'off',
         'no-useless-escape': 'off',
