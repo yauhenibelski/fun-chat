@@ -63,6 +63,7 @@ module.exports = ({ develop }) => ({
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Fun chat',
+            favicon: path.resolve(__dirname, './src/assets/img/message.svg')
         }),
         new MiniCssExtractPlugin({
             filename: 'style.css',

@@ -18,10 +18,10 @@ class LoginPage extends Component {
 
         this.createComponent();
 
-        userLoginResponse$.subscribe(this.userLoginResponseSubscribe);
+        userLoginResponse$.subscribe(this.handleUserLoginResponse);
     }
 
-    private userLoginResponseSubscribe = (data: UserAuthRes | null) => {
+    private handleUserLoginResponse = (data: UserAuthRes | null) => {
         if (!data) return;
 
         SessionStorage.saveSession(data.user);

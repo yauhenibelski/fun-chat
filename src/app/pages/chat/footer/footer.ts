@@ -13,10 +13,20 @@ class Footer extends Component {
         this.createComponent();
     }
 
-    protected createComponent(): void {
-        Object.entries(style).forEach(([styleName, styleModuleName]) => {
-            this.footerHTML = this.footerHTML.replaceAll(`{{${styleName}}}`, <string>styleModuleName);
+    protected replaceClassStyleNameToModuleClassName(
+        htmlString: string,
+        scssModule: { [key: string]: string },
+    ): string {
+        let html = htmlString;
+
+        Object.entries(scssModule).forEach(([styleName, styleModuleName]) => {
+            html = html.replaceAll(`{{${styleName}}}`, styleModuleName);
         });
+        return html;
+    }
+
+    protected createComponent(): void {
+        this.footerHTML = this.replaceClassStyleNameToModuleClassName(this.footerHTML, style);
 
         this.contentWrap.innerHTML = this.footerHTML;
     }

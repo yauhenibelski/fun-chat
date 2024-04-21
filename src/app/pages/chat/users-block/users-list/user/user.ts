@@ -47,7 +47,7 @@ class User extends Component {
         this.render();
     }
 
-    private externalUserMsgHistorySubscribe = (data: ChatDto<MessagesRes> | null): void => {
+    private handleExternalUserMessageHistoryResponse = (data: ChatDto<MessagesRes> | null): void => {
         if (!data) return;
 
         const {
@@ -66,7 +66,7 @@ class User extends Component {
         this.render();
     };
 
-    private msgSendResponseSubscribe = (mgs: SendMessageRes | null): void => {
+    private handleSendMessageResponse = (mgs: SendMessageRes | null): void => {
         if (!mgs) return;
 
         const { from: fromUserLogin, id } = mgs.message;
@@ -77,7 +77,7 @@ class User extends Component {
         }
     };
 
-    protected updateUserSubscribe = (data: UserAuthRes | null) => {
+    protected updateUser = (data: UserAuthRes | null) => {
         if (!data) return;
 
         if (data.user.login === this.user.login) {
@@ -86,7 +86,7 @@ class User extends Component {
         }
     };
 
-    protected msgDeleteResponseSubscribe = (data: MessageInteraction<'isDeleted'> | null) => {
+    protected handleDeleteMessageResponse = (data: MessageInteraction<'isDeleted'> | null) => {
         if (!data) return;
         const IDindex = this.newMessageID.indexOf(data.message.id);
 
@@ -97,19 +97,19 @@ class User extends Component {
     };
 
     protected connectedCallback(): void {
-        userExternalLoginResponse$.subscribe(this.updateUserSubscribe);
-        userExternalLogoutResponse$.subscribe(this.updateUserSubscribe);
-        msgSendResponse$.subscribe(this.msgSendResponseSubscribe);
-        externalUserMsgHistory$.subscribe(this.externalUserMsgHistorySubscribe);
-        msgDeleteResponse$.subscribe(this.msgDeleteResponseSubscribe);
+        userExternalLoginResponse$.subscribe(this.updateUser);
+        userExternalLogoutResponse$.subscribe(this.updateUser);
+        msgSendResponse$.subscribe(this.handleSendMessageResponse);
+        externalUserMsgHistory$.subscribe(this.handleExternalUserMessageHistoryResponse);
+        msgDeleteResponse$.subscribe(this.handleDeleteMessageResponse);
     }
 
     protected disconnectedCallback(): void {
-        userExternalLoginResponse$.unsubscribe(this.updateUserSubscribe);
-        userExternalLogoutResponse$.unsubscribe(this.updateUserSubscribe);
-        msgSendResponse$.unsubscribe(this.msgSendResponseSubscribe);
-        externalUserMsgHistory$.unsubscribe(this.externalUserMsgHistorySubscribe);
-        msgDeleteResponse$.unsubscribe(this.msgDeleteResponseSubscribe);
+        userExternalLoginResponse$.unsubscribe(this.updateUser);
+        userExternalLogoutResponse$.unsubscribe(this.updateUser);
+        msgSendResponse$.unsubscribe(this.handleSendMessageResponse);
+        externalUserMsgHistory$.unsubscribe(this.handleExternalUserMessageHistoryResponse);
+        msgDeleteResponse$.unsubscribe(this.handleDeleteMessageResponse);
     }
 
     protected createComponent(): void {

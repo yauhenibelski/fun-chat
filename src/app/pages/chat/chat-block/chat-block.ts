@@ -22,7 +22,7 @@ import { getID } from '@utils/get-id';
 import { MessageChangeStatus } from '@interfaces/message-interaction';
 import { UserAuthRes } from '@interfaces/user-authentication-response';
 import style from './chat-block.module.scss';
-import type User from '../users/users-list/user/user';
+import type User from '../users-block/users-list/user/user';
 import { UserLogin } from '../../../types/user-login';
 import Message from './message/message';
 import { MessageStatusRes } from '../../../types/message-delivery-status';
@@ -44,19 +44,19 @@ class ChatBlock extends Component {
 
         this.createComponent();
 
-        currentExternalUser$.subscribe(this.currentExternalUserSubscribe);
-        externalUserMsgHistory$.subscribe(this.externalUserMsgHistorySubscribe);
-        msgSendResponse$.subscribe(this.msgSendResponseSubscribe);
-        msgDeliverResponse$.subscribe(this.msgStatusResponseSubscribe('isDelivered'));
-        msgReadResponse$.subscribe(this.msgStatusResponseSubscribe('isReaded'));
-        editedMessageResponse$.subscribe(this.msgStatusResponseSubscribe('isEdited'));
-        msgDeleteResponse$.subscribe(this.msgDeleteResponseSubscribe);
-        editedMessage$.subscribe(this.editedMessageSubscribe);
-        userExternalLoginResponse$.subscribe(this.userExternalLoginOrLogoutResSubscribe);
-        userExternalLogoutResponse$.subscribe(this.userExternalLoginOrLogoutResSubscribe);
+        currentExternalUser$.subscribe(this.updateCurrentExternalUser);
+        externalUserMsgHistory$.subscribe(this.handleExternalUserMsgHistoryResponse);
+        msgSendResponse$.subscribe(this.handleSendMassageResponse);
+        msgDeliverResponse$.subscribe(this.handleMessageStatusResponse('isDelivered'));
+        msgReadResponse$.subscribe(this.handleMessageStatusResponse('isReaded'));
+        editedMessageResponse$.subscribe(this.handleMessageStatusResponse('isEdited'));
+        msgDeleteResponse$.subscribe(this.handleDeleteMessageResponse);
+        editedMessage$.subscribe(this.setTextFieldFocus);
+        userExternalLoginResponse$.subscribe(this.handleExternalUserLoginOrLogoutResponse);
+        userExternalLogoutResponse$.subscribe(this.handleExternalUserLoginOrLogoutResponse);
     }
 
-    private userExternalLoginOrLogoutResSubscribe = (data: UserAuthRes | null): void => {
+    private handleExternalUserLoginOrLogoutResponse = (data: UserAuthRes | null): void => {
         if (!data) return;
         if (!currentExternalUser$.value) return;
 
@@ -71,7 +71,7 @@ class ChatBlock extends Component {
         }
     };
 
-    private editedMessageSubscribe = (mgs: Message | null): void => {
+    private setTextFieldFocus = (mgs: Message | null): void => {
         if (!mgs) return;
 
         const { message } = mgs;
@@ -84,7 +84,7 @@ class ChatBlock extends Component {
         }
     };
 
-    private msgDeleteResponseSubscribe = (mgs: MessageInteraction<'isDeleted'> | null): void => {
+    private handleDeleteMessageResponse = (mgs: MessageInteraction<'isDeleted'> | null): void => {
         if (!mgs) return;
 
         const { id } = mgs.message;
@@ -110,7 +110,7 @@ class ChatBlock extends Component {
         });
     }
 
-    private msgStatusResponseSubscribe = <Status extends keyof MessageStatus>(statusType: Status) => {
+    private handleMessageStatusResponse = <Status extends keyof MessageStatus>(statusType: Status) => {
         return (mgs: MessageStatusRes<Status> | null): void => {
             if (!mgs) return;
 
@@ -140,7 +140,7 @@ class ChatBlock extends Component {
         };
     };
 
-    private msgSendResponseSubscribe = (mgs: SendMessageRes | null): void => {
+    private handleSendMassageResponse = (mgs: SendMessageRes | null): void => {
         if (!currentExternalUser$.value) return;
         if (!mgs) return;
         const { login: currentExternalUserLogin } = currentExternalUser$.value.user;
@@ -166,7 +166,7 @@ class ChatBlock extends Component {
         }
     };
 
-    private externalUserMsgHistorySubscribe = (data: ChatDto<MessagesRes> | null): void => {
+    private handleExternalUserMsgHistoryResponse = (data: ChatDto<MessagesRes> | null): void => {
         if (!data) return;
 
         const { dialogWindow, dialogWindowWrap } = this.elements;
@@ -200,7 +200,7 @@ class ChatBlock extends Component {
         this.scrollToElem('last_message');
     };
 
-    private currentExternalUserSubscribe = (currentUser: User | null): void => {
+    private updateCurrentExternalUser = (currentUser: User | null): void => {
         if (!currentUser) return;
 
         const { isLogined, login } = currentUser.user;
@@ -254,20 +254,21 @@ class ChatBlock extends Component {
         dialogWindowWrap.onclick = () => this.setReadMessageStatus();
         dialogWindowWrap.onwheel = () => this.setReadMessageStatus();
 
-        textForm.onsubmit = this.sendEditMassage;
+        textForm.onsubmit = this.sendOrEditMassage;
 
         this.appendElements();
     }
 
-    protected sendEditMassage = (event: Event): void => {
+    protected sendOrEditMassage = (event: Event): void => {
         event.preventDefault();
         this.setReadMessageStatus();
 
         const { inputTextWrap } = this.elements;
         const textField = <HTMLInputElement>inputTextWrap.firstChild;
         const isEditMassage = Boolean(editedMessage$.value);
+        const massageHasOnlyGaps = textField.value.split('').every(symbol => symbol === ' ');
 
-        if (!textField.value) return;
+        if (!textField.value || massageHasOnlyGaps) return;
 
         if (isEditMassage) {
             ApiService.send<ChangeStatusMessageReq>('MSG_EDIT', {

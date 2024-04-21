@@ -22,14 +22,14 @@ class UsersList extends Component {
 
         this.createComponent();
 
-        userLoginResponse$.subscribe(this.userLoginResponseSubscribe);
-        activeUsersResponse$.subscribe(this.updateUserListSubscribe);
-        inActiveUsersResponse$.subscribe(this.updateUserListSubscribe);
-        userExternalLoginResponse$.subscribe(this.userExternalLoginResponseSubscribe);
+        userLoginResponse$.subscribe(this.handleUserLoginResponse);
+        activeUsersResponse$.subscribe(this.updateUserList);
+        inActiveUsersResponse$.subscribe(this.updateUserList);
+        userExternalLoginResponse$.subscribe(this.handleExternalUserLoginResponse);
         userSortValue$.subscribe(() => this.render());
     }
 
-    private userExternalLoginResponseSubscribe = (data: UserAuthRes | null) => {
+    private handleExternalUserLoginResponse = (data: UserAuthRes | null) => {
         if (!data) return;
 
         const isNewUser = !(data.user.login in this.users);
@@ -40,12 +40,12 @@ class UsersList extends Component {
         }
     };
 
-    private userLoginResponseSubscribe = (data: UserAuthRes | null) => {
+    private handleUserLoginResponse = (data: UserAuthRes | null) => {
         if (!data) return;
         ApiService.fetchUsers();
     };
 
-    private updateUserListSubscribe = (data: UserAuthPropRes[]) => {
+    private updateUserList = (data: UserAuthPropRes[]) => {
         this.users = {
             ...this.users,
             ...Object.fromEntries(

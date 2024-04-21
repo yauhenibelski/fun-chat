@@ -62,7 +62,6 @@ class Message extends Component {
     }
 
     updateMessage(status: boolean, type: keyof MessageStatus): void {
-        // debugger
         this.message.status[type] = status;
         this.render();
     }

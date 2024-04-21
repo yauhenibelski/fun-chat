@@ -3,7 +3,7 @@ import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
 import style from './chat.module.scss';
 import Header from './header/header';
-import Users from './users/users';
+import Users from './users-block/users';
 import ChatBlock from './chat-block/chat-block';
 import Footer from './footer/footer';
 

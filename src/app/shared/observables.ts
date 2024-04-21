@@ -1,6 +1,6 @@
 import { UserAuthPropRes, UserAuthRes } from '@interfaces/user-authentication-response';
 import Observable from '@utils/observer-template';
-import type User from '@pages/chat/users/users-list/user/user';
+import type User from '@pages/chat/users-block/users-list/user/user';
 import type Message from '@pages/chat/chat-block/message/message';
 import { SendMessageRes, MessagesRes } from '@interfaces/send-message-response';
 import { ChatDto } from '@interfaces/dto';
