@@ -14,7 +14,7 @@ $background-color: rgba(0, 0, 0, 0.1);
     margin: auto;
 
     button {
-        background-color: rgba(0, 0, 0, 0.1);
+        background-color: $background-color;
         border: none;
         padding: 5px 0px;
         margin-top: 20px;

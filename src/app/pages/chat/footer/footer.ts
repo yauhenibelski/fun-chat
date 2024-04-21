@@ -1,5 +1,6 @@
 import CustomSelector from '@utils/set-selector-name';
 import Component from '@utils/ui-component-template';
+import { replaceClassStyleNameToModuleClassName } from '@utils/replace-html-class-name';
 import style from './footer.module.scss';
 import footer from './footer.html';
 
@@ -13,21 +14,13 @@ class Footer extends Component {
         this.createComponent();
     }
 
-    protected replaceClassStyleNameToModuleClassName(
-        htmlString: string,
-        scssModule: { [key: string]: string },
-    ): string {
-        let html = htmlString;
+    protected createComponent(): void {
+        this.footerHTML = replaceClassStyleNameToModuleClassName(this.footerHTML, style);
 
-        Object.entries(scssModule).forEach(([styleName, styleModuleName]) => {
-            html = html.replaceAll(`{{${styleName}}}`, styleModuleName);
-        });
-        return html;
+        this.appendElements();
     }
 
-    protected createComponent(): void {
-        this.footerHTML = this.replaceClassStyleNameToModuleClassName(this.footerHTML, style);
-
+    protected appendElements(): void {
         this.contentWrap.innerHTML = this.footerHTML;
     }
 }

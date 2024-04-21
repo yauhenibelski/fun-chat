@@ -1,0 +1,26 @@
+.host {
+    display: flex;
+    height: 80svh;
+}
+.content-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 5px;
+    border: solid;
+    padding: 30px;
+    max-width: 300px;
+    margin: auto;
+
+    button {
+        padding: 5px 30px;
+    }
+}
+
+.description {
+    text-align: center;
+}
+.gh-link {
+    text-decoration: none;
+    color: black;
+}

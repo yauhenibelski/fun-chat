@@ -5,6 +5,7 @@ import SessionStorage from '@shared/session-storage/session-storage';
 import { userLoginResponse$ } from '@shared/observables';
 import { UserAuthRes } from '@interfaces/user-authentication-response';
 import style from './header.module.scss';
+import { redirectTo } from '../../../../router/utils/redirect';
 
 @CustomSelector('Header')
 class Header extends Component {
@@ -24,6 +25,10 @@ class Header extends Component {
     }
 
     protected createComponent(): void {
+        const { infoBtn } = this.elements;
+
+        infoBtn.onclick = () => redirectTo('about');
+
         this.appendElements();
     }
 
