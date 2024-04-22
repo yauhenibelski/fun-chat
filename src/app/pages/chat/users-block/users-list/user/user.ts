@@ -13,7 +13,7 @@ import {
 import { MessagesRes, SendMessageRes } from '@interfaces/send-message-response';
 import { getID } from '@utils/get-id';
 import { ChatDto } from '@interfaces/dto';
-import { ApiService } from '@shared/api-service';
+import { ApiService } from '@shared/api-service/api-service';
 import style from './user.module.scss';
 import { UserLogin } from '../../../../../types/user-login';
 import { MessageInteraction } from '../../../../../types/message-interaction';

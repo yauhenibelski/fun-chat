@@ -22,3 +22,4 @@ export const msgReadResponse$ = new Observable<MessageStatusRes<'isReaded'> | nu
 export const msgDeleteResponse$ = new Observable<MessageInteraction<'isDeleted'> | null>(null);
 export const editedMessageResponse$ = new Observable<MessageInteraction<'isEdited'> | null>(null);
 export const editedMessage$ = new Observable<Message | null>(null);
+export const showLoader$ = new Observable<boolean>(false);

@@ -13,7 +13,7 @@ import {
     userExternalLoginResponse$,
     userExternalLogoutResponse$,
 } from '@shared/observables';
-import { ApiService } from '@shared/api-service';
+import { ApiService } from '@shared/api-service/api-service';
 import { SendMessageRes, MessagesRes, SendMessageResProp, MessageStatus } from '@interfaces/send-message-response';
 import { ChangeStatusMessageReq, SendMessageReq } from '@interfaces/send-message-request';
 import SessionStorage from '@shared/session-storage/session-storage';

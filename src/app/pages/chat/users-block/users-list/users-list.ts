@@ -1,6 +1,6 @@
 import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
-import { ApiService } from '@shared/api-service';
+import { ApiService } from '@shared/api-service/api-service';
 import { UserAuthPropRes, UserAuthRes } from '@interfaces/user-authentication-response';
 import {
     activeUsersResponse$,

@@ -12,7 +12,7 @@ export const router = (): void => {
         redirectTo(startPage);
     }
 
-    if (hash) {
+    if (hash in Routes) {
         renderPage(hash);
     }
 

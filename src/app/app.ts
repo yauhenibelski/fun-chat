@@ -1,5 +1,5 @@
 import createElement from '@utils/create-element';
-import { ApiService } from '@shared/api-service';
+import { ApiService } from '@shared/api-service/api-service';
 import SessionStorage from '@shared/session-storage/session-storage';
 import { router } from '../router/router';
 

@@ -3,7 +3,7 @@ import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
 import { MessageStatus, SendMessageResProp } from '@interfaces/send-message-response';
 import SessionStorage from '@shared/session-storage/session-storage';
-import { ApiService } from '@shared/api-service';
+import { ApiService } from '@shared/api-service/api-service';
 import { MessageChangeStatus } from '@interfaces/message-interaction';
 import { editedMessage$ } from '@shared/observables';
 import style from './message.module.scss';

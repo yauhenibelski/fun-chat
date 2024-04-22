@@ -1,7 +1,7 @@
 import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
-import { replaceClassStyleNameToModuleClassName } from '@utils/replace-html-class-name';
+import { replaceHtmlClassStyleNameToModuleClassName } from '@utils/replace-html-class-name';
 import style from './about.module.scss';
 import about from './about.html';
 import { redirectTo } from '../../../router/utils/redirect';
@@ -18,7 +18,7 @@ class AboutPage extends Component {
     }
 
     protected createComponent(): void {
-        this.aboutHTML = replaceClassStyleNameToModuleClassName(this.aboutHTML, style);
+        this.aboutHTML = replaceHtmlClassStyleNameToModuleClassName(this.aboutHTML, style);
 
         const { goBackBtn } = this.elements;
 
@@ -32,6 +32,7 @@ class AboutPage extends Component {
             goBackBtn: createElement({ tag: 'button', text: 'Go back' }),
         };
     }
+
     protected appendElements(): void {
         const { goBackBtn } = this.elements;
 

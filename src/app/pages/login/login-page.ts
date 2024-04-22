@@ -1,7 +1,7 @@
 import Component from '@utils/ui-component-template';
 import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
-import { ApiService } from '@shared/api-service';
+import { ApiService } from '@shared/api-service/api-service';
 import SessionStorage from '@shared/session-storage/session-storage';
 import { userLoginResponse$ } from '@shared/observables';
 import { UserAuthRes } from '@interfaces/user-authentication-response';
@@ -45,13 +45,38 @@ class LoginPage extends Component {
         this.addEvents();
     }
 
-    protected matchInputValue(input: HTMLInputElement, minLength: number): boolean {
+    protected isLoginValid(input: HTMLInputElement, minLength: number): boolean {
         const { value, validity } = input;
-        if (value) {
-            if (!value.match(`^[a-zA-Z\-]{${minLength}}`)) {
-                input.setCustomValidity(`Minimum length ${minLength} characters`);
-                return false;
-            }
+        if (value.match(/\s/)) {
+            input.setCustomValidity(`Invalid Login`);
+            return false;
+        }
+
+        if (value.length < minLength) {
+            input.setCustomValidity(`Minimum length ${minLength}`);
+            return false;
+        }
+
+        input.setCustomValidity('');
+
+        return validity.valid;
+    }
+
+    protected isPasswordValid(input: HTMLInputElement, minLength: number): boolean {
+        const { value, validity } = input;
+        if (value.match(/\s/)) {
+            input.setCustomValidity(`Invalid Password`);
+            return false;
+        }
+
+        if (value.length < minLength) {
+            input.setCustomValidity(`Minimum length ${minLength}`);
+            return false;
+        }
+
+        if (!value.match(/[A-Z]+/)) {
+            input.setCustomValidity(`Must be at least one capital letter`);
+            return false;
         }
 
         input.setCustomValidity('');
@@ -71,8 +96,8 @@ class LoginPage extends Component {
         loginBTN.onclick = () => {
             if (SessionStorage.isLogined()) ApiService.logout();
 
-            const validFirstNameField = this.matchInputValue(firstNameField, 3);
-            const validPasswordField = this.matchInputValue(passwordField, 3);
+            const validFirstNameField = this.isLoginValid(firstNameField, 4);
+            const validPasswordField = this.isPasswordValid(passwordField, 8);
             const canSubmit = validFirstNameField && validPasswordField;
 
             firstNameField.className = validFirstNameField ? '' : style.invalid;

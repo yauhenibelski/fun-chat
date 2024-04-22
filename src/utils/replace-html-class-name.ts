@@ -1,4 +1,4 @@
-export const replaceClassStyleNameToModuleClassName = (
+export const replaceHtmlClassStyleNameToModuleClassName = (
     htmlString: string,
     scssModule: { [key: string]: string },
 ): string => {

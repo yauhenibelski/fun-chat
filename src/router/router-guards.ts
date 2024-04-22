@@ -5,10 +5,10 @@ import { Routes } from './routes.const';
 
 const guards: { [key in keyof typeof Routes]: () => boolean } = {
     login: () => {
-        return SessionStorage.isLogined() ? (redirectTo('chat'), false) : true;
+        return !SessionStorage.isLogined() || (redirectTo('chat'), false);
     },
     chat: () => {
-        return SessionStorage.isLogined() ? true : (redirectTo('login'), false);
+        return SessionStorage.isLogined() || (redirectTo('login'), false);
     },
     about: () => true,
 } as const;

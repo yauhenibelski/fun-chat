@@ -1,6 +1,6 @@
 import CustomSelector from '@utils/set-selector-name';
 import Component from '@utils/ui-component-template';
-import { replaceClassStyleNameToModuleClassName } from '@utils/replace-html-class-name';
+import { replaceHtmlClassStyleNameToModuleClassName } from '@utils/replace-html-class-name';
 import style from './footer.module.scss';
 import footer from './footer.html';
 
@@ -15,7 +15,7 @@ class Footer extends Component {
     }
 
     protected createComponent(): void {
-        this.footerHTML = replaceClassStyleNameToModuleClassName(this.footerHTML, style);
+        this.footerHTML = replaceHtmlClassStyleNameToModuleClassName(this.footerHTML, style);
 
         this.appendElements();
     }

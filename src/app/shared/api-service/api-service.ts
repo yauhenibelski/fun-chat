@@ -1,6 +1,7 @@
 import { ChatDto } from '@interfaces/dto';
 import { UserAuthReq } from '@interfaces/user-authentication-request';
-import { RequestType } from '../types/request.type';
+import ErrorMessage from '@shared/error-message/error-message';
+import { RequestType } from '../../types/request.type';
 import {
     activeUsersResponse$,
     editedMessageResponse$,
@@ -10,15 +11,19 @@ import {
     msgDeliverResponse$,
     msgReadResponse$,
     msgSendResponse$,
+    showLoader$,
     userExternalLoginResponse$,
     userExternalLogoutResponse$,
     userLoginResponse$,
     userLogoutResponse$,
-} from './observables';
-import SessionStorage from './session-storage/session-storage';
+} from '../observables';
+import SessionStorage from '../session-storage/session-storage';
+import { SocketState } from './socket-state.const';
+import { Popup } from '../../core/popup/popup';
 
 export class ApiService {
-    static readonly socket = new WebSocket('ws://localhost:4000/');
+    static socket: WebSocket = this.getSocket();
+    static intervalID?: number | undefined;
 
     static readonly send = <Payload>(type: RequestType, data: Payload, id?: string): void => {
         const body: ChatDto<Payload> = {
@@ -30,17 +35,20 @@ export class ApiService {
         this.socket.send(JSON.stringify(body));
     };
 
-    static readonly open = () => {
-        this.socket.onopen = event => {
-            console.log(event.type);
+    private static getSocket(): WebSocket {
+        return new WebSocket('ws://localhost:4000');
+    }
 
+    static readonly open = (): void => {
+        this.socket.onopen = () => {
             if (SessionStorage.isLogined()) {
                 ApiService.login();
             }
+            showLoader$.publish(false);
         };
     };
 
-    static readonly message = () => {
+    static readonly message = (): void => {
         this.socket.onmessage = event => {
             const dataDto = JSON.parse(event.data);
 
@@ -56,19 +64,34 @@ export class ApiService {
             if (dataDto.type === 'MSG_READ') msgReadResponse$.publish(dataDto.payload);
             if (dataDto.type === 'MSG_DELETE') msgDeleteResponse$.publish(dataDto.payload);
             if (dataDto.type === 'MSG_EDIT') editedMessageResponse$.publish(dataDto.payload);
-            if (dataDto.type === 'ERROR') console.log(dataDto, 'error');
+            if (dataDto.type === 'ERROR') Popup.show(new ErrorMessage(dataDto.payload.error).getElement());
         };
     };
 
-    static readonly error = () => {
-        this.socket.onerror = event => {
-            console.log(event, event.type);
+    static readonly error = (): void => {
+        this.socket.onerror = () => {
+            this.connect();
         };
     };
-    static readonly close = () => {
-        this.socket.onclose = event => {
-            console.log(event, event.type);
+
+    static readonly close = (): void => {
+        this.socket.onclose = () => {
+            Popup.show(new ErrorMessage(`connection failed`).getElement());
+            this.connect();
         };
+    };
+
+    static readonly connect = (): void => {
+        if (this.intervalID) return;
+
+        this.intervalID = setInterval(() => {
+            if (this.socket.readyState === SocketState.CONNECTING) return;
+            if (this.socket.readyState === SocketState.OPEN) location.reload();
+
+            this.socket = this.getSocket();
+        }, 1000) as unknown as number;
+
+        showLoader$.publish(true);
     };
 
     static readonly fetchUsers = (): void => {
@@ -80,7 +103,7 @@ export class ApiService {
         ApiService.send<UserAuthReq>('USER_LOGOUT', {
             user: {
                 login: SessionStorage.app.login,
-                password: SessionStorage.storage.getItem('password')!, // ??????
+                password: SessionStorage.storage.getItem('password')!,
             },
         });
     };
@@ -93,19 +116,21 @@ export class ApiService {
                     password,
                 },
             });
-            SessionStorage.storage.setItem('password', password); // ??????
+            SessionStorage.storage.setItem('password', password);
             return;
         }
 
         ApiService.send<UserAuthReq>('USER_LOGIN', {
             user: {
                 login: SessionStorage.app.login,
-                password: SessionStorage.storage.getItem('password')!, // ??????
+                password: SessionStorage.storage.getItem('password')!,
             },
         });
+
+        showLoader$.publish(true);
     };
 
-    static readonly socketRun = () => {
+    static readonly socketRun = (): void => {
         ApiService.open();
         ApiService.message();
         ApiService.close();
