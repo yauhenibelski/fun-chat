@@ -3,7 +3,7 @@ import CustomSelector from '@utils/set-selector-name';
 import createElement from '@utils/create-element';
 import { ApiService } from '@shared/api-service/api-service';
 import SessionStorage from '@shared/session-storage/session-storage';
-import { userLoginResponse$ } from '@shared/observables';
+import { showLoader$, userLoginResponse$ } from '@shared/observables';
 import { UserAuthRes } from '@interfaces/user-authentication-response';
 import style from './login-page.module.scss';
 import { redirectTo } from '../../../router/utils/redirect';
@@ -26,6 +26,7 @@ class LoginPage extends Component {
 
         SessionStorage.saveSession(data.user);
         redirectTo(Routes.chat);
+        showLoader$.publish(false);
         this.render();
     };
 
