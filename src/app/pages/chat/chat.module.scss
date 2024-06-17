@@ -1,0 +1,15 @@
+.host {
+    display: block;
+}
+.content-wrap {
+    display: block;
+    max-width: 800px;
+    margin: auto;
+}
+
+.chat-wrap {
+    display: flex;
+    justify-content: space-between;
+    height: 70vh;
+    margin-top: 5px;
+}

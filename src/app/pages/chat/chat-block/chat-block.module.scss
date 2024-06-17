@@ -1,0 +1,68 @@
+.host {
+    display: flex;
+    position: relative;
+    flex-basis: 69%;
+    max-width: 69%;
+    height: 100%;
+}
+.content-wrap {
+    display: flex;
+    flex-direction: column;
+    border: solid;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.external-user-wrap {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: solid;
+}
+
+.user-name {
+    word-break: break-all;
+}
+
+.input-text-wrap {
+    display: flex;
+    flex-grow: 1;
+
+    input {
+        width: 100%;
+    }
+}
+
+.text-form {
+    display: flex;
+    padding-top: 5px;
+    border-top: solid;
+
+    button {
+        padding: 5px 30px;
+    }
+}
+
+.dialog-window {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    flex-grow: 1;
+    overflow: hidden;
+
+    div {
+        overflow: scroll;
+    }
+}
+
+.empty-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    div {
+        display: flex;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,21 @@
+.host {
+    display: block;
+}
+.content-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: solid;
+    border-radius: 5px;
+
+    p {
+        margin: 5px;
+        word-break: break-all;
+    }
+}
+
+.btns-wrap {
+    button {
+        margin: 5px;
+    }
+}

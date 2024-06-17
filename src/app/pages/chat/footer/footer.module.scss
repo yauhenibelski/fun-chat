@@ -1,0 +1,32 @@
+.host {
+    display: block;
+}
+.content-wrap {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: solid;
+    border-radius: 5px;
+    margin-top: 5px;
+    word-break: break-all;
+}
+
+.gh-link {
+    text-decoration: none;
+    color: black;
+}
+
+.rs-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+
+    &::before {
+        content: '';
+        background-image: url('https://rs.school/assets/rs-logo-CZw4GNvL.webp');
+        background-size: 100% 100%;
+        width: 25px;
+        height: 25px;
+    }
+}

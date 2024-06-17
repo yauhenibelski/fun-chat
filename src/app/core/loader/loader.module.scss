@@ -1,0 +1,42 @@
+.host {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    right: 0px;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    z-index: 3;
+}
+
+.content-wrap {
+    display: flex;
+    background: white;
+    padding: 10px;
+    max-width: 300px;
+    border-radius: 5px;
+    border: solid;
+    align-items: center;
+}
+
+.spinner {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid;
+    border-bottom: 2px solid;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin: 5px;
+    animation: spinner 1s linear infinite;
+    z-index: 3;
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

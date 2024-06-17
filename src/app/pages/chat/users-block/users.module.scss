@@ -1,0 +1,25 @@
+.host {
+    display: flex;
+    flex-basis: 30%;
+    height: 100%;
+    overflow: scroll;
+}
+.content-wrap {
+    display: block;
+    border: solid;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
+}
+
+.search {
+    display: flex;
+    background-color: antiquewhite;
+    height: 30px;
+    position: relative;
+
+    input {
+        padding: 5px;
+        width: 100%;
+    }
+}
